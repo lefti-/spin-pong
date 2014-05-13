@@ -6,8 +6,10 @@
     Apply spin to the ball. After certain amount of spin, your chances of winning are much bigger.
     Be quick, the ball becomes faster and faster as time passes!
 
+    FRAMEWORKS/LIBRARIES USED:
     SFML is used for windowing, handling events and input, rendering and audio.
     Box2D is used for collision detection.
+    NetEXT is used for more accurate time-related functions.
 */
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -996,6 +998,7 @@ namespace sfml_pong
         private Text enemyScoreText;
         private Text spinCounterText;
         private Text ballSpeedText;
+        private Text gamePausedText;
         private Player player;
         private Enemy enemy;
         private Ball ball;
@@ -1006,6 +1009,7 @@ namespace sfml_pong
         private Sprite midlineSprite;
         private MyContactListener contactListener;
         private float velocityX;
+        public bool gamePaused = false;
         public float dt = 1 / 60.0f / 30; // Physics time-step with a smaller simulation of sub-steps = 30
 
         public GameScene(RenderWindow window)
@@ -1041,6 +1045,16 @@ namespace sfml_pong
             Texture texture = new Texture("midline_10x1024.png");
             this.midlineSprite = new Sprite(texture);
             this.midlineSprite.Position = new Vector2f(((window.Size.X / 2) - 5), 0);
+
+            this.gamePausedText = new Text("PAUSED", arial);
+            this.gamePausedText.CharacterSize = 120;
+            this.gamePausedText.Color = new Color(255, 255, 255);
+            // Center text
+            FloatRect pauseTextRect = gamePausedText.GetLocalBounds();
+            this.gamePausedText.Origin = new Vector2f(pauseTextRect.Left + pauseTextRect.Width / 2, pauseTextRect.Top + pauseTextRect.Height / 2);
+            this.gamePausedText.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 2);
+
+            window.SetMouseCursorVisible(false);
 
             // Setup event handlers
             window.Closed += new EventHandler(OnWindowClose);
@@ -1081,6 +1095,7 @@ namespace sfml_pong
             {
                 this.velocityX = this.ball.Body.GetLinearVelocity().X;
             }
+
             string ballSpeedFormat = string.Format("ball:  {0:0.00} km/h", this.velocityX * 2);
             this.ballSpeedText = new Text(ballSpeedFormat, arial);
             this.ballSpeedText.Position = new Vector2f(160, window.Size.Y / 2);
@@ -1139,7 +1154,19 @@ namespace sfml_pong
             }
             else if (e.Code == Keyboard.Key.Space)
             {
-                this.ball.playerLaunch = true;
+                if (gamePaused == true)
+                {
+                    gamePaused = false;
+
+                    // When unpausing, set mouse position to player body position
+                    int playerPosX = (int)this.player.Body.GetPosition().X * 32;
+                    int playerPosY = (int)this.player.Body.GetPosition().Y * 32;
+                    Mouse.SetPosition(new Vector2i(playerPosX, playerPosY), window);
+                }
+                else
+                {
+                    gamePaused = true;
+                }
             }
         }
 
@@ -1155,25 +1182,28 @@ namespace sfml_pong
             {
                 this.player.down = false;
             }
-            else if (e.Code == Keyboard.Key.Space)
-            {
-                this.ball.playerLaunch = false;
-            }
         }
 
         public void Update(StopWatch enemyStartTimer, StopWatch ballVelIncreaseTimer, RenderWindow window)
         {
-            // Simulate a smaller timestep, to prevent tunneling on high velocity
-            for (int i = 0; i < 30; i++)
+            if (gamePaused)
             {
-                this.world.Step(dt, 6, 3);
-
-                // Fast moving physics related stuff here
-                this.ball.Update(this.player, this.enemy, enemyStartTimer, ballVelIncreaseTimer);
-                this.player.Update(window);
-                this.enemy.Update(this.ball);
+                // Do nothing
             }
-            // Slow moving physics related stuff here
+            else
+            {
+                // Simulate a smaller timestep, to prevent tunneling on high velocity
+                for (int i = 0; i < 30; i++)
+                {
+                    this.world.Step(dt, 6, 3);
+
+                    // Fast moving physics related stuff here
+                    this.ball.Update(this.player, this.enemy, enemyStartTimer, ballVelIncreaseTimer);
+                    this.player.Update(window);
+                    this.enemy.Update(this.ball);
+                }
+                // Slow moving physics related stuff here
+            }
         }
 
         public void Draw(RenderWindow window)
@@ -1187,6 +1217,11 @@ namespace sfml_pong
             this.ball.Draw(window);
             this.topWall.Draw(window);
             this.bottomWall.Draw(window);
+
+            if (gamePaused)
+            {
+                window.Draw(this.gamePausedText);
+            }
         }
     }
 
@@ -1195,13 +1230,12 @@ namespace sfml_pong
     {
         public const int WindowWidth = 1024;
         public const int WindowHeight = 768;
-        public const string Title = "Pong";
+        public const string Title = "Spin Pong";
 
         static void Main()
         {
             // Create window
             RenderWindow window = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), Title);
-            window.SetMouseCursorVisible(false);
             window.SetKeyRepeatEnabled(false);
             //window.SetVerticalSyncEnabled(true);
             window.SetFramerateLimit(60);
