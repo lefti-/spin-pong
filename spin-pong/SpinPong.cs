@@ -3,7 +3,7 @@
     This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
 
     YOUR GOAL:
-    Apply spin to the ball. After certain amount of spin, your chances of winning are much bigger.
+    Apply spin to the ball. After certain amount of spin, your chances of winning are much higher.
     Be quick, the ball becomes faster and faster as time passes!
 
     FRAMEWORKS/LIBRARIES USED:
@@ -21,15 +21,15 @@
 //      * Hard: 15 spins.
 //      * Impossible: 18-20 spins.
 //
+// TO-DO: Change to fixed timestep, tie game logic to game time elapsed, not framerate
 // TO-DO: Pressing Right Mouse button or Space, "respawns" the ball if the ball glitches
 // TO-DO: Menus
 // TO-DO: Sounds
-// TO-DO: Pause
 //
 // BUG: Sometimes when the ball gets between enemy and wall, the ball goes through the wall and the game essentially freezes
 // WHY?: *Ball going through the wall: Due to the collisions getting glitched, I haven't defined what happens when the ball gets
-//                            stuck between the paddle and the wall.
-//       *The game freezes: Because the ball flies off into the distance until infinity
+//                                     stuck between the paddle and the wall.
+//       *The game freezes: Because the ball flies off into the distance until infinity.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
@@ -46,7 +46,7 @@ using Box2DX.Dynamics;
 using Shape = Box2DX.Collision.Shape;
 
 
-namespace sfml_pong
+namespace spin_pong
 {   // Box2D's ContactListener for collision detection
     class MyContactListener : ContactListener
     {
@@ -316,8 +316,7 @@ namespace sfml_pong
             // Create the physics body
             this.ballBody = world.CreateBody(ballBodyDef);
 
-            // We then set the user data in the body
-            // so we can access it later on
+            // Set user data in the body
             this.ballBody.SetUserData(this);
 
             // Define a new shape def
@@ -603,8 +602,7 @@ namespace sfml_pong
             // Set player body as a bullet (for continuous collision detection on high velocities)
             this.playerBody.SetBullet(true);
 
-            // We then set the user data in the body
-            // so we can access it later on
+            // Set user data in the body
             this.playerBody.SetUserData(this);
 
             // Define a new shape definitions
@@ -637,7 +635,8 @@ namespace sfml_pong
         public void Update(RenderWindow window)
         {
             Vec2 playerVelocity = new Vec2();
-            float mousePosY = Mouse.GetPosition(window).Y / PixelsToMeter;
+            // Transform the mouse position from window coordinates to world coordinates
+            Vector2f mousePos = window.MapPixelToCoords(Mouse.GetPosition(window)) / PixelsToMeter;
             float playerPosY = this.Body.GetPosition().Y;
 
             // Player collides with wall
@@ -649,7 +648,7 @@ namespace sfml_pong
                 if (playerPosY < ((window.Size.Y) / 2) / PixelsToMeter)
                 {
                     // End collision
-                    if (this.collisionWithWall && mousePosY > (Wall.HalfHeight + Wall.HalfHeight + HalfHeight) / PixelsToMeter)
+                    if (this.collisionWithWall && mousePos.Y > (Wall.HalfHeight + Wall.HalfHeight + HalfHeight) / PixelsToMeter)
                     {
                         this.collisionWithWall = false;
                     }
@@ -658,7 +657,7 @@ namespace sfml_pong
                 else if (playerPosY > ((window.Size.Y) / 2) / PixelsToMeter)
                 {
                     // End collision
-                    if (this.collisionWithWall && mousePosY < (window.Size.Y - (Wall.HalfHeight + Wall.HalfHeight + HalfHeight)) / PixelsToMeter)
+                    if (this.collisionWithWall && mousePos.Y < (window.Size.Y - (Wall.HalfHeight + Wall.HalfHeight + HalfHeight)) / PixelsToMeter)
                     {
                         this.collisionWithWall = false;
                     }
@@ -668,9 +667,9 @@ namespace sfml_pong
             else
             {
                 // Mouse cursor up or down from player's center
-                if (mousePosY - playerPosY > 0.01f || mousePosY - playerPosY < -0.01f)
+                if (mousePos.Y - playerPosY > 0.01f || mousePos.Y - playerPosY < -0.01f)
                 {
-                    playerVelocity.Y = (mousePosY - playerPosY) * 60;
+                    playerVelocity.Y = (mousePos.Y - playerPosY) * 60;
                 }
             }
 
@@ -709,8 +708,7 @@ namespace sfml_pong
             // Create the physics body
             this.enemyBody = world.CreateBody(enemyBodyDef);
 
-            // We then set the user data in the body
-            // so we can access it later on
+            // Set user data in the body
             this.enemyBody.SetUserData(this);
 
             // Define a new shape definition
@@ -898,13 +896,11 @@ namespace sfml_pong
             // Create the physics body
             this.wallBody = world.CreateBody(wallBodyDef);
 
-            // We then set the user data in the body
-            // so we can access it later on
+            // Set user data in the body
             this.wallBody.SetUserData(this);
 
             // Define a new shape def
             this.wallPoly = new PolygonDef();
-            // EdgeShapes
             this.wallPoly.IsSensor = true;
             this.wallPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
 
@@ -951,8 +947,7 @@ namespace sfml_pong
             // Create the physics body
             this.goalBody = world.CreateBody(goalBodyDef);
 
-            // We then set the user data in the body
-            // so we can access it later on
+            // Set user data in the body
             this.goalBody.SetUserData(this);
 
             // Define a new shape def
@@ -1010,7 +1005,6 @@ namespace sfml_pong
         private MyContactListener contactListener;
         private float velocityX;
         public bool gamePaused = false;
-        public float dt = 1 / 60.0f / 30; // Physics time-step with a smaller simulation of sub-steps = 30
 
         public GameScene(RenderWindow window)
         {
@@ -1054,7 +1048,7 @@ namespace sfml_pong
             this.gamePausedText.Origin = new Vector2f(pauseTextRect.Left + pauseTextRect.Width / 2, pauseTextRect.Top + pauseTextRect.Height / 2);
             this.gamePausedText.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 2);
 
-            window.SetMouseCursorVisible(false);
+            window.SetMouseCursorVisible(true);
 
             // Setup event handlers
             window.Closed += new EventHandler(OnWindowClose);
@@ -1122,6 +1116,18 @@ namespace sfml_pong
 
             if (e.Button == Mouse.Button.Left)
             {
+                // Transform the mouse position from window coordinates to world coordinates
+                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+                // Retrieve the bounding box of the sprite
+                FloatRect bounds = enemyScoreText.GetGlobalBounds();
+
+                // Hit test
+                if (bounds.Contains(mouse.X, mouse.Y))
+                {
+                    Console.WriteLine("Lol");
+                }
+
                 this.ball.playerLaunch = true;
             }
         }
@@ -1193,9 +1199,10 @@ namespace sfml_pong
             else
             {
                 // Simulate a smaller timestep, to prevent tunneling on high velocity
-                for (int i = 0; i < 30; i++)
+                float subSteps = 30;
+                for (int i = 0; i < subSteps; i++)
                 {
-                    this.world.Step(dt, 6, 3);
+                    this.world.Step(1 / 60.0f / subSteps, 6, 3);
 
                     // Fast moving physics related stuff here
                     this.ball.Update(this.player, this.enemy, enemyStartTimer, ballVelIncreaseTimer);
@@ -1226,6 +1233,146 @@ namespace sfml_pong
     }
 
 
+    class MenuScene : Scene
+    {
+        private Font arial;
+        private Text titleText;
+        private Text playText;
+        private Text quitText;
+        public bool mouseOnPlayButton;
+        public bool mouseOnQuitButton;
+
+        public MenuScene(RenderWindow window)
+        {
+            // Set font
+            this.arial = new Font("arial.ttf");
+
+            // Create menu buttons
+            this.titleText = new Text("Spin Pong", arial);
+            this.titleText.CharacterSize = 100;
+            this.titleText.Color = new Color(0, 100, 255);
+            this.playText = new Text("Play", arial);
+            this.playText.CharacterSize = 80;
+
+            this.quitText = new Text("Quit", arial);
+            this.quitText.CharacterSize = 80;
+            
+            // Center texts
+            FloatRect titleTextRect = titleText.GetLocalBounds();
+            this.titleText.Origin = new Vector2f(titleTextRect.Left + titleTextRect.Width / 2, titleTextRect.Top + titleTextRect.Height / 2);
+            this.titleText.Position = new Vector2f(window.Size.X / 2, 100);
+
+            FloatRect playTextRect = playText.GetLocalBounds();
+            this.playText.Origin = new Vector2f(playTextRect.Left + playTextRect.Width / 2, playTextRect.Top + playTextRect.Height / 2);
+            this.playText.Position = new Vector2f(window.Size.X / 2, 400);
+
+            FloatRect quitTextRect = quitText.GetLocalBounds();
+            this.quitText.Origin = new Vector2f(quitTextRect.Left + quitTextRect.Width / 2, quitTextRect.Top + quitTextRect.Height / 2);
+            this.quitText.Position = new Vector2f(window.Size.X / 2, 500);
+
+            window.SetMouseCursorVisible(true);
+
+            // Setup event handlers
+            window.Closed += new EventHandler(OnWindowClose);
+            window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+            window.MouseButtonReleased += new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
+        }
+
+        public void OnWindowClose(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            window.Close();
+        }
+
+        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                // Transform the mouse position from window coordinates to world coordinates
+                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+                // Retrieve the bounding boxes of the text objects
+                FloatRect playTextBounds = playText.GetGlobalBounds();
+
+                FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+                // Hit tests
+                if (playTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    Console.WriteLine("PLAY button clicked.");
+                }
+                if (quitTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    Console.WriteLine("QUIT button clicked.");
+                }
+            }
+        }
+
+        public void OnMouseButtonRelease(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+
+            }
+        }
+
+        public void Update(RenderWindow window)
+        {
+            // Transform the mouse position from window coordinates to world coordinates
+            Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+            // Retrieve the bounding boxes of the text objects
+            FloatRect playTextBounds = playText.GetGlobalBounds();
+            FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+            // Hit tests
+            if (playTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnPlayButton = true;
+                Console.WriteLine("I am on PLAY text.");
+            }
+            else if (quitTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnQuitButton = true;
+                Console.WriteLine("I am on QUIT text.");
+            }
+            else
+            {
+                mouseOnPlayButton = false;
+                mouseOnQuitButton = false;
+            }
+        }
+
+        public void Draw(RenderWindow window)
+        {
+            if (!mouseOnPlayButton)
+            {
+                this.playText.Color = new Color(0, 100, 255);
+            }
+            else
+            {
+                this.playText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnQuitButton)
+            {
+                this.quitText.Color = new Color(0, 100, 255);
+            }
+            else
+            {
+                this.quitText.Color = new Color(255, 0, 0);
+            }
+
+            window.Draw(this.titleText);
+            window.Draw(this.playText);
+            window.Draw(this.quitText);
+        }
+    }
     class Pong
     {
         public const int WindowWidth = 1024;
@@ -1240,7 +1387,8 @@ namespace sfml_pong
             //window.SetVerticalSyncEnabled(true);
             window.SetFramerateLimit(60);
 
-            GameScene firstScene = new GameScene(window);
+            //GameScene firstScene = new GameScene(window);
+            MenuScene mainMenu = new MenuScene(window);
 
             StopWatch enemyStartTimer = new StopWatch();
             StopWatch ballVelIncreaseTimer = new StopWatch();
@@ -1252,13 +1400,15 @@ namespace sfml_pong
                 window.DispatchEvents();
 
                 // Update objects
-                firstScene.Update(enemyStartTimer, ballVelIncreaseTimer, window);
+                //firstScene.Update(enemyStartTimer, ballVelIncreaseTimer, window);
+                mainMenu.Update(window);
 
                 // Clear screen
                 window.Clear();
 
                 // Render everything
-                firstScene.Draw(window);
+                //firstScene.Draw(window);
+                mainMenu.Draw(window);
 
                 // Update the display
                 window.Display();
