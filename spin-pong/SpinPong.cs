@@ -1,29 +1,23 @@
 ﻿/*
     Spin Pong
-    This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
+    This software uses The MIT License (MIT). See license agreement LICENSE for full details.
 
     YOUR GOAL:
-    Apply spin to the ball. After certain amount of spin, your chances of winning are much higher.
-    Be quick, the ball becomes faster and faster as time passes!
+        - Apply spin to the ball. After certain amount of spin, your chances of winning are much higher.
+        - Be quick, the ball becomes faster and faster as time passes!
 
     FRAMEWORKS/LIBRARIES USED:
-    SFML is used for windowing, handling events and input, rendering graphics and audio.
-    Box2D is used for collision detection.
-    NetEXT is used for more accurate time-related functions.
+        - SFML is used for windowing, handling events and input, rendering graphics and audio.
+        - Box2D is used for collision detection.
+        - NetEXT is used for more accurate time-related functions.
 */
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // CHECKLIST
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// Difficulty settings:
-//      * Easy: 5 spins.
-//      * Medium: 10 spins.
-//      * Hard: 15 spins.
-//      * Impossible: 18-20 spins.
 //
 // TO-DO: Change to fixed timestep, tie game logic to game time elapsed, not framerate.
 // TO-DO: Pressing Right Mouse button or Space, "respawns" the ball if the ball glitches.
-// TO-DO: Screen / State / Scene management. Menu -> Play. "Stack of States"?
 // TO-DO: Sounds.
 //
 // BUG: Sometimes when the ball gets between enemy and wall, the ball goes through the wall and the game essentially freezes.
@@ -47,7 +41,8 @@ using Shape = Box2DX.Collision.Shape;
 
 
 namespace spin_pong
-{   // Box2D's ContactListener is implemented for collision detection.
+{
+    // Box2D's ContactListener is implemented for collision detection.
     class MyContactListener : ContactListener
     {
         public override void Add(ContactPoint point)
@@ -286,6 +281,12 @@ namespace spin_pong
 
     public class Ball : Entity
     {
+        private Body ballBody;
+        private PolygonDef ballPoly;
+        private Sprite ballSprite;
+        private Random random;
+        public Body Body { get { return this.ballBody; } }
+        public Sprite Sprite { get { return this.ballSprite; } }
         private const int HalfWidth = 12;
         private const int HalfHeight = 12;
         public int contactCounter = 0;
@@ -300,12 +301,6 @@ namespace spin_pong
         public bool playerStart = false;
         public bool playerLaunch = false;
         public bool enemyStart = false;
-        private Body ballBody;
-        private PolygonDef ballPoly;
-        private Sprite ballSprite;
-        private Random random;
-        public Body Body { get { return this.ballBody; } }
-        public Sprite Sprite { get { return this.ballSprite; } }
 
         public Ball(World world, float positionX, float positionY)
         {
@@ -577,13 +572,6 @@ namespace spin_pong
 
     public class Player : Entity
     {
-        private const int HalfWidth = 12;
-        private const int HalfHeight = 64;
-        public int contactCounter = 0;
-        public int score = 0;
-        public bool up = false;
-        public bool down = false;
-        public bool collisionWithWall = false;
         private Body playerBody;
         private PolygonDef rightShape;
         private PolygonDef topShape;
@@ -591,6 +579,11 @@ namespace spin_pong
         private Sprite playerSprite;
         public Body Body { get { return this.playerBody; } }
         public Sprite Sprite { get { return this.playerSprite; } }
+        private const int HalfWidth = 12;
+        private const int HalfHeight = 64;
+        public int contactCounter = 0;
+        public int score = 0;
+        public bool collisionWithWall = false;
 
         public Player(World world, float positionX, float positionY)
         {
@@ -637,6 +630,7 @@ namespace spin_pong
         public void Update(RenderWindow window)
         {
             Vec2 playerVelocity = new Vec2();
+
             // Transform the mouse position from window coordinates to world coordinates.
             Vector2f mousePos = window.MapPixelToCoords(Mouse.GetPosition(window)) / PixelsToMeter;
             float playerPosY = this.Body.GetPosition().Y;
@@ -688,11 +682,6 @@ namespace spin_pong
 
     public class Enemy : Entity
     {
-        private const int HalfWidth = 12;
-        private const int HalfHeight = 64;
-        public int contactCounter = 0;
-        public int score = 0;
-        public bool collisionWithWall = false;
         public Body enemyBody;
         public Sprite enemySprite;
         private PolygonDef sideShape;
@@ -700,9 +689,18 @@ namespace spin_pong
         private PolygonDef bottomShape;
         public Body Body { get { return this.enemyBody; } }
         public Sprite Sprite { get { return this.enemySprite; } }
+        private const int HalfWidth = 12;
+        private const int HalfHeight = 64;
+        private int spinsNeeded;
+        public int contactCounter = 0;
+        public int score = 0;
+        public bool collisionWithWall = false;
 
-        public Enemy(World world, float positionX, float positionY)
+        public Enemy(World world, float positionX, float positionY, int spinsNeeded)
         {
+            // Enemy difficulty setting.
+            this.spinsNeeded = spinsNeeded;
+
             // Define a body with a position.
             BodyDef enemyBodyDef = new BodyDef();
             enemyBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
@@ -717,6 +715,7 @@ namespace spin_pong
             this.sideShape = new PolygonDef();
             this.sideShape.IsSensor = true;
             this.sideShape.Density = 1.0f;
+
             // (4px, 124px) fixture at (player.body: 2, 2)
             this.sideShape.SetAsBox(2f / PixelsToMeter, (HalfHeight - 2) / PixelsToMeter, new Vec2(-10 / PixelsToMeter, 2 / PixelsToMeter), 0);
             this.sideShape.UserData = "side";
@@ -724,6 +723,7 @@ namespace spin_pong
             this.topShape = new PolygonDef();
             this.topShape.IsSensor = true;
             this.topShape.Density = 1.0f;
+
             // (24px, 4px) fixture at (enemy.body: 15?? (why 0 doesn't work?), 0)
             this.topShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(3 / PixelsToMeter, -HalfHeight / PixelsToMeter), 0);
             this.topShape.UserData = "top";
@@ -731,6 +731,7 @@ namespace spin_pong
             this.bottomShape = new PolygonDef();
             this.bottomShape.IsSensor = true;
             this.bottomShape.Density = 1.0f;
+
             // (24px, 4px) fixture at (enemy.body: 15??, 128)
             this.bottomShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(3 / PixelsToMeter, HalfHeight / PixelsToMeter), 0);
             this.bottomShape.UserData = "bottom";
@@ -790,27 +791,31 @@ namespace spin_pong
                         // Ball moving down.
                         if (ballVelocity.Y > 0)
                         {
-                            if (ball.spinCounter < 15)
+                            // Enemy catches up to ball.
+                            if (ball.spinCounter < spinsNeeded)
                             {
                                 enemyVelocity.Y = ballVelocity.X + ballVelocity.Y; // enemyVelocity.Y = ballVelocity.Y - 0.5f;
                             }
-                            else if (ball.spinCounter >= 15)
+
+                            // Enemy becomes much slower than ball.
+                            else if (ball.spinCounter >= spinsNeeded)
                             {
                                 enemyVelocity.Y = ballVelocity.X - (ballVelocity.X * 0.50f);
-                                Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
                         // Ball moving up.
                         else if (ballVelocity.Y < 0)
                         {
-                            if (ball.spinCounter < 15)
+                            // Enemy catches up to ball.
+                            if (ball.spinCounter < spinsNeeded)
                             {
                                 enemyVelocity.Y = ballVelocity.X - ballVelocity.Y; // enemyVelocity.Y = -ballVelocity.Y - 0.5f;
                             }
-                            else if (ball.spinCounter >= 15)
+
+                            // Enemy becomes much slower than ball.
+                            else if (ball.spinCounter >= spinsNeeded)
                             {
                                 enemyVelocity.Y = ballVelocity.X - (ballVelocity.X * 0.50f);
-                                Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
                         else
@@ -824,27 +829,31 @@ namespace spin_pong
                         // Ball moving down.
                         if (ballVelocity.Y > 0)
                         {
-                            if (ball.spinCounter < 15)
+                            // Enemy catches up to ball.
+                            if (ball.spinCounter < spinsNeeded)
                             {
                                 enemyVelocity.Y = -ballVelocity.X - ballVelocity.Y; // enemyVelocity.Y = -ballVelocity.Y + 0.5f;
                             }
-                            else if (ball.spinCounter >= 15)
+
+                            // Enemy becomes much slower than ball.
+                            else if (ball.spinCounter >= spinsNeeded)
                             {
                                 enemyVelocity.Y = -ballVelocity.X + (ballVelocity.X * 0.50f);
-                                Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
                         // Ball moving up.
                         else if (ballVelocity.Y < 0)
                         {
-                            if (ball.spinCounter < 15)
+                            // Enemy catches up to ball.
+                            if (ball.spinCounter < spinsNeeded)
                             {
                                 enemyVelocity.Y = -ballVelocity.X + ballVelocity.Y; // enemyVelocity.Y = ballVelocity.Y + 0.5f;
                             }
-                            else if (ball.spinCounter >= 15)
+
+                            // Enemy becomes much slower than ball.
+                            else if (ball.spinCounter >= spinsNeeded)
                             {
                                 enemyVelocity.Y = -ballVelocity.X + (ballVelocity.X * 0.50f);
-                                Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
                         else
@@ -879,13 +888,13 @@ namespace spin_pong
 
     public class Wall : Entity
     {
-        public const int HalfWidth = 512;
-        public const int HalfHeight = 16;
         private Body wallBody;
         private PolygonDef wallPoly;
         private Sprite wallSprite;
         public Body Body { get { return this.wallBody; } }
         public Sprite Sprite { get { return this.wallSprite; } }
+        public const int HalfWidth = 512;
+        public const int HalfHeight = 16;
 
         public Wall(World world, float positionX, float positionY)
         {
@@ -931,12 +940,10 @@ namespace spin_pong
         private Body goalBody;
         private PolygonDef goalPoly;
         private Sprite goalSprite;
-
-        public const int HalfWidth = 3;
-        public const int HalfHeight = 512;
-
         public Body Body { get { return this.goalBody; } }
         public Sprite Sprite { get { return this.goalSprite; } }
+        public const int HalfWidth = 3;
+        public const int HalfHeight = 512;
 
         public Goal(World world, float positionX, float positionY)
         {
@@ -976,38 +983,44 @@ namespace spin_pong
         }
     }
     
-    public class GameStateManager
+
+    class GameStateManager
     {
-
-        public List<GameState> gameStates = new List<GameState>();
+        List<GameState> gameStates = new List<GameState>();
         private int currentState;
-
-        public const int MENUSTATE = 0;
-        public const int PLAYSTATE = 1;
 
         public GameStateManager(RenderWindow window)
         {
             gameStates = new List<GameState>();
 
-            this.currentState = MENUSTATE;
+            this.currentState = 0;
             gameStates.Add(new MenuState(this));
             gameStates[this.currentState].Initialize(window);
+
+            GetCurrentStateInfo();
         }
 
-        public void ChangeState(RenderWindow window, int state, GameState gameState)
+        public void ChangeState(RenderWindow window, GameState gameState)
         {
+            // Unbind state event handlers.
             gameStates[this.currentState].UnbindEvents(window);
-            this.currentState = state;
+
+            // Remove the current state.
+            gameStates.RemoveAt(this.currentState);
+
+            // Add a state.
+            this.currentState = 0;
             gameStates.Add(gameState);
+
+            // Initialize the state.
             gameStates[this.currentState].Initialize(window);
 
-            GetCurrentState();
+            GetCurrentStateInfo();
         }
 
-        public void GetCurrentState()
+        public void GetCurrentStateInfo()
         {
-            Console.WriteLine(gameStates[this.currentState]);
-            Console.WriteLine(this.currentState);
+            Console.WriteLine("GameState: " + gameStates[this.currentState]);
         }
 
         public void Update(RenderWindow window)
@@ -1059,13 +1072,16 @@ namespace spin_pong
         private MyContactListener contactListener;
         private StopWatch enemyStartTimer; 
         private StopWatch ballVelIncreaseTimer;
-        private GameStateManager gsm;
+        private GameStateManager gameStateManager;
         private float velocityX;
+        private string difficultySetting;
         public bool gamePaused = false;
 
-        public PlayState(GameStateManager gsm)
+
+        public PlayState(GameStateManager gameStateManager, string difficultySetting)
         {
-            this.gsm = gsm;
+            this.gameStateManager = gameStateManager;
+            this.difficultySetting = difficultySetting;
         }
 
         public override void Initialize(RenderWindow window)
@@ -1085,9 +1101,25 @@ namespace spin_pong
             contactListener = new MyContactListener();
             this.world.SetContactListener(contactListener);
 
-            // Create objects.
             this.player = new Player(this.world, 100, (window.Size.Y / 2));
-            this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2));
+
+            if (difficultySetting == "Easy")
+            {
+                this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 5);
+            }
+            else if (difficultySetting == "Medium")
+            {
+                this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 10);
+            }
+            else if (difficultySetting == "Hard")
+            {
+                this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 15);
+            }
+            else if (difficultySetting == "Impossible")
+            {
+                this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 18);
+            }
+
             this.ball = new Ball(this.world, (window.Size.X / 2), (window.Size.Y / 2));
             this.topWall = new Wall(this.world, (window.Size.X / 2), 16);
             this.bottomWall = new Wall(this.world, (window.Size.X / 2), window.Size.Y - 16);
@@ -1114,10 +1146,10 @@ namespace spin_pong
 
             window.SetMouseCursorVisible(false);
 
+            // Create timers.
             this.enemyStartTimer = new StopWatch();
             this.ballVelIncreaseTimer = new StopWatch();
 
-            // Setup event handlers.
             BindEvents(window);
         }
 
@@ -1125,7 +1157,6 @@ namespace spin_pong
         {
             window.Closed += new EventHandler(OnWindowClose);
             window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
-            window.KeyReleased += new EventHandler<KeyEventArgs>(OnKeyRelease);
             window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
             window.MouseButtonReleased += new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
         }
@@ -1134,9 +1165,84 @@ namespace spin_pong
         {
             window.Closed -= new EventHandler(OnWindowClose);
             window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
-            window.KeyReleased -= new EventHandler<KeyEventArgs>(OnKeyRelease);
             window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
             window.MouseButtonReleased -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
+        }
+
+        public void OnWindowClose(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            window.Close();
+        }
+
+        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                this.ball.playerLaunch = true;
+            }
+        }
+
+        public void OnMouseButtonRelease(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                this.ball.playerLaunch = false;
+            }
+        }
+
+        public void OnKeyPress(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
+            }
+            else if (e.Code == Keyboard.Key.Space)
+            {
+                if (gamePaused == true)
+                {
+                    gamePaused = false;
+
+                    // When unpaused, set mouse position to player body position.
+                    int playerPosX = (int)this.player.Body.GetPosition().X * 32;
+                    int playerPosY = (int)this.player.Body.GetPosition().Y * 32;
+                    Mouse.SetPosition(new Vector2i(playerPosX, playerPosY), window);
+                }
+                else
+                {
+                    gamePaused = true;
+                }
+            }
+        }
+
+        public override void Update(RenderWindow window)
+        {
+            if (gamePaused)
+            {
+                // Do nothing.
+            }
+            else
+            {
+                // Simulate a smaller timestep, to prevent tunneling on high velocities.
+                float subSteps = 30;
+                for (int i = 0; i < subSteps; i++)
+                {
+                    this.world.Step(1 / 60.0f / subSteps, 6, 3);
+
+                    // Fast moving physics related stuff here.
+                    this.ball.Update(this.player, this.enemy, this.enemyStartTimer, this.ballVelIncreaseTimer);
+                    this.player.Update(window);
+                    this.enemy.Update(this.ball);
+                }
+                // Slow moving physics related stuff here.
+            }
         }
 
         public void DrawTexts(RenderWindow window)
@@ -1184,105 +1290,6 @@ namespace spin_pong
             window.Draw(this.ballSpeedText);
         }
 
-        public void OnWindowClose(object sender, EventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            window.Close();
-        }
-
-        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Button == Mouse.Button.Left)
-            {
-                this.ball.playerLaunch = true;
-            }
-        }
-
-        public void OnMouseButtonRelease(object sender, MouseButtonEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Button == Mouse.Button.Left)
-            {
-                this.ball.playerLaunch = false;
-            }
-        }
-
-        public void OnKeyPress(object sender, KeyEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Code == Keyboard.Key.Escape)
-            {
-                gsm.ChangeState(window, 0, new MenuState(gsm));
-                Console.WriteLine("ESC pressed.");
-            }
-            else if (e.Code == Keyboard.Key.Up)
-            {
-                this.player.up = true;
-            }
-            else if (e.Code == Keyboard.Key.Down)
-            {
-                this.player.down = true;
-            }
-            else if (e.Code == Keyboard.Key.Space)
-            {
-                if (gamePaused == true)
-                {
-                    gamePaused = false;
-
-                    // When unpaused, set mouse position to player body position.
-                    int playerPosX = (int)this.player.Body.GetPosition().X * 32;
-                    int playerPosY = (int)this.player.Body.GetPosition().Y * 32;
-                    Mouse.SetPosition(new Vector2i(playerPosX, playerPosY), window);
-                }
-                else
-                {
-                    gamePaused = true;
-                }
-            }
-        }
-
-        public void OnKeyRelease(object sender, KeyEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Code == Keyboard.Key.Up)
-            {
-                this.player.up = false;
-            }
-            else if (e.Code == Keyboard.Key.Down)
-            {
-                this.player.down = false;
-            }
-        }
-
-        public override void Update(RenderWindow window)
-        {
-            if (gamePaused)
-            {
-                // Do nothing.
-            }
-            else
-            {
-                // Simulate a smaller timestep, to prevent tunneling on high velocities.
-                float subSteps = 30;
-                for (int i = 0; i < subSteps; i++)
-                {
-                    this.world.Step(1 / 60.0f / subSteps, 6, 3);
-
-                    // Fast moving physics related stuff here.
-                    this.ball.Update(this.player, this.enemy, this.enemyStartTimer, this.ballVelIncreaseTimer);
-                    this.player.Update(window);
-                    this.enemy.Update(this.ball);
-                }
-                // Slow moving physics related stuff here.
-            }
-        }
-
         public override void Draw(RenderWindow window)
         {
             DrawTexts(window);
@@ -1308,14 +1315,15 @@ namespace spin_pong
         private Font arial;
         private Text titleText;
         private Text playText;
+        private Text difficultyText;
         private Text quitText;
+        private GameStateManager gameStateManager;
         public bool mouseOnPlayButton;
         public bool mouseOnQuitButton;
-        private GameStateManager gsm;
 
-        public MenuState(GameStateManager gsm)
+        public MenuState(GameStateManager gameStateManager)
         {
-            this.gsm = gsm;
+            this.gameStateManager = gameStateManager;
         }
 
         public override void Initialize(RenderWindow window)
@@ -1325,14 +1333,21 @@ namespace spin_pong
 
             // Create menu buttons.
             this.titleText = new Text("Spin Pong", arial);
-            this.titleText.CharacterSize = 100;
+            this.titleText.CharacterSize = 80;
             this.titleText.Color = new Color(0, 100, 255);
 
             this.playText = new Text("Play", arial);
-            this.playText.CharacterSize = 80;
+            this.playText.CharacterSize = 60;
+
+            //string difficultyFormat = string.Format("Difficulty: {0}", this.player.score);
+            //this.difficultyText = new Text(difficultyFormat, arial);
+            //this.difficultyText.CharacterSize = 80;
+
+            this.difficultyText = new Text("Difficulty: Beginner", arial);
+            this.difficultyText.CharacterSize = 80;
 
             this.quitText = new Text("Quit", arial);
-            this.quitText.CharacterSize = 80;
+            this.quitText.CharacterSize = 60;
 
             // Center texts.
             FloatRect titleTextRect = titleText.GetLocalBounds();
@@ -1354,7 +1369,6 @@ namespace spin_pong
 
         public override void BindEvents(RenderWindow window)
         {
-            // Setup event handlers.
             window.Closed += new EventHandler(OnWindowClose);
             window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
             window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
@@ -1395,13 +1409,12 @@ namespace spin_pong
 
                 // Retrieve the bounding boxes of the text objects.
                 FloatRect playTextBounds = playText.GetGlobalBounds();
-
                 FloatRect quitTextBounds = quitText.GetGlobalBounds();
 
                 // Hit tests.
                 if (playTextBounds.Contains(mouse.X, mouse.Y))
                 {
-                    gsm.ChangeState(window, 1, new PlayState(gsm));
+                    gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
                 }
                 if (quitTextBounds.Contains(mouse.X, mouse.Y))
                 {
@@ -1423,16 +1436,17 @@ namespace spin_pong
             if (playTextBounds.Contains(mouse.X, mouse.Y))
             {
                 mouseOnPlayButton = true;
-                Console.WriteLine("Mouse cursor on PLAY button.");
-            }
-            else if (quitTextBounds.Contains(mouse.X, mouse.Y))
-            {
-                mouseOnQuitButton = true;
-                Console.WriteLine("Mouse cursor on QUIT button.");
             }
             else
             {
                 mouseOnPlayButton = false;
+            }
+            if (quitTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnQuitButton = true;
+            }
+            else
+            {
                 mouseOnQuitButton = false;
             }
         }
@@ -1460,6 +1474,270 @@ namespace spin_pong
             window.Draw(this.titleText);
             window.Draw(this.playText);
             window.Draw(this.quitText);
+        }
+    }
+
+
+    class DifficultyState : GameState
+    {
+        private Font arial;
+        private Text titleText;
+        private Text easyText;
+        private Text mediumText;
+        private Text hardText;
+        private Text impossibleText;
+        private Text backText;
+        private GameStateManager gameStateManager;
+        public bool mouseOnEasyButton;
+        public bool mouseOnMediumButton;
+        public bool mouseOnHardButton;
+        public bool mouseOnImpossibleButton;
+        public bool mouseOnBackButton;
+
+        public DifficultyState(GameStateManager gameStateManager)
+        {
+            this.gameStateManager = gameStateManager;
+        }
+
+        public override void Initialize(RenderWindow window)
+        {
+            // Set font.
+            this.arial = new Font("arial.ttf");
+
+            // Create menu buttons.
+            this.titleText = new Text("Choose difficulty:", arial);
+            this.titleText.CharacterSize = 70;
+            this.titleText.Color = new Color(0, 100, 255);
+
+            this.easyText = new Text("Easy (5 spins)", arial);
+            this.easyText.CharacterSize = 50;
+
+            this.mediumText = new Text("Medium (10 spins)", arial);
+            this.mediumText.CharacterSize = 50;
+
+            this.hardText = new Text("Hard (15 spins)", arial);
+            this.hardText.CharacterSize = 50;
+
+            this.impossibleText = new Text("Impossible (18 spins)", arial);
+            this.impossibleText.CharacterSize = 50;
+
+            this.backText = new Text("Back", arial);
+            this.backText.CharacterSize = 50;
+
+            // Center texts.
+            FloatRect titleTextRect = titleText.GetLocalBounds();
+            this.titleText.Origin = new Vector2f(titleTextRect.Left + titleTextRect.Width / 2, titleTextRect.Top + titleTextRect.Height / 2);
+            this.titleText.Position = new Vector2f(window.Size.X / 2, 100);
+
+            FloatRect easyTextRect = easyText.GetLocalBounds();
+            this.easyText.Origin = new Vector2f(easyTextRect.Left + easyTextRect.Width / 2, easyTextRect.Top + easyTextRect.Height / 2);
+            this.easyText.Position = new Vector2f(window.Size.X / 2, 300);
+
+            FloatRect mediumTextRect = mediumText.GetLocalBounds();
+            this.mediumText.Origin = new Vector2f(mediumTextRect.Left + mediumTextRect.Width / 2, mediumTextRect.Top + mediumTextRect.Height / 2);
+            this.mediumText.Position = new Vector2f(window.Size.X / 2, 360);
+
+            FloatRect hardTextRect = hardText.GetLocalBounds();
+            this.hardText.Origin = new Vector2f(hardTextRect.Left + hardTextRect.Width / 2, hardTextRect.Top + hardTextRect.Height / 2);
+            this.hardText.Position = new Vector2f(window.Size.X / 2, 420);
+
+            FloatRect impossibleTextRect = impossibleText.GetLocalBounds();
+            this.impossibleText.Origin = new Vector2f(impossibleTextRect.Left + impossibleTextRect.Width / 2, impossibleTextRect.Top + impossibleTextRect.Height / 2);
+            this.impossibleText.Position = new Vector2f(window.Size.X / 2, 480);
+
+            FloatRect backTextRect = backText.GetLocalBounds();
+            this.backText.Origin = new Vector2f(backTextRect.Left + backTextRect.Width / 2, backTextRect.Top + backTextRect.Height / 2);
+            this.backText.Position = new Vector2f(window.Size.X / 2, 650);
+
+            window.SetMouseCursorVisible(true);
+
+            BindEvents(window);
+        }
+
+        public override void BindEvents(RenderWindow window)
+        {
+            window.Closed += new EventHandler(OnWindowClose);
+            window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public override void UnbindEvents(RenderWindow window)
+        {
+            window.Closed -= new EventHandler(OnWindowClose);
+            window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public void OnWindowClose(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            window.Close();
+        }
+
+        public void OnKeyPress(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                gameStateManager.ChangeState(window, new MenuState(gameStateManager));
+            }
+
+        }
+        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                // Transform the mouse position from window coordinates to world coordinates.
+                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+                // Retrieve the bounding boxes of the text objects.
+                FloatRect easyTextBounds = easyText.GetGlobalBounds();
+                FloatRect mediumTextBounds = mediumText.GetGlobalBounds();
+                FloatRect hardTextBounds = hardText.GetGlobalBounds();
+                FloatRect impossibleTextBounds = impossibleText.GetGlobalBounds();
+                FloatRect backTextBounds = backText.GetGlobalBounds();
+
+                // Hit tests.
+                if (easyTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Easy"));
+                }
+                if (mediumTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Medium"));
+                }
+                if (hardTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Hard"));
+                }
+                if (impossibleTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Impossible"));
+                }
+                if (backTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new MenuState(gameStateManager));
+                }
+            }
+        }
+
+        public override void Update(RenderWindow window)
+        {
+            // Transform the mouse position from window coordinates to world coordinates.
+            Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+            // Retrieve the bounding boxes of the text objects.
+            FloatRect easyTextBounds = easyText.GetGlobalBounds();
+            FloatRect mediumTextBounds = mediumText.GetGlobalBounds();
+            FloatRect hardTextBounds = hardText.GetGlobalBounds();
+            FloatRect impossibleTextBounds = impossibleText.GetGlobalBounds();
+            FloatRect backTextBounds = backText.GetGlobalBounds();
+
+            // Hit tests.
+            if (easyTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnEasyButton = true;
+            }
+            else
+            {
+                mouseOnEasyButton = false;
+
+            }
+
+            if (mediumTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnMediumButton = true;
+            }
+            else
+            {
+                mouseOnMediumButton = false;
+            }
+
+            if (hardTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnHardButton = true;
+            }
+            else
+            {
+                mouseOnHardButton = false;
+            }
+
+            if (impossibleTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnImpossibleButton = true;
+            }
+            else
+            {
+                mouseOnImpossibleButton = false;
+            }
+
+            if (backTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnBackButton = true;
+            }
+            else
+            {
+                mouseOnBackButton = false;
+            }
+        }
+
+        public override void Draw(RenderWindow window)
+        {
+            if (!mouseOnEasyButton)
+            {
+                this.easyText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.easyText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnMediumButton)
+            {
+                this.mediumText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.mediumText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnHardButton)
+            {
+                this.hardText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.hardText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnImpossibleButton)
+            {
+                this.impossibleText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.impossibleText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnBackButton)
+            {
+                this.backText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.backText.Color = new Color(255, 0, 0);
+            }
+
+            window.Draw(this.titleText);
+            window.Draw(this.easyText);
+            window.Draw(this.mediumText);
+            window.Draw(this.hardText);
+            window.Draw(this.impossibleText);
+            window.Draw(this.backText);
         }
     }
 
@@ -1493,7 +1771,6 @@ namespace spin_pong
 
                 // Render graphics.
                 gameStateManager.Draw(window);
-
             }
         }
     }
