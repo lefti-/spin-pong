@@ -3,7 +3,8 @@
     This software uses The MIT License (MIT). See license agreement LICENSE for full details.
 
     YOUR GOAL:
-        - Apply spin to the ball. After certain amount of spin, your chances of winning are much higher.
+        - Apply spin to the ball. After certain amount of spin, your chances of scoring are MUCH higher.
+        - Score 3 points to win.
         - Be quick, the ball becomes faster and faster as time passes!
 
     FRAMEWORKS/LIBRARIES USED:
@@ -16,14 +17,10 @@
 // CHECKLIST
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// TO-DO: Change to fixed timestep, tie game logic to game time elapsed, not framerate.
-// TO-DO: Pressing Right Mouse button or Space, "respawns" the ball if the ball glitches.
 // TO-DO: Sounds.
+// TO-DO (maybe): Mouse cursor clipped/grabbed/captured to the window.
+// TO-DO (maybe): Change to fixed timestep, tie game logic to game time elapsed, not framerate.
 //
-// BUG: Sometimes when the ball gets between enemy and wall, the ball goes through the wall and the game essentially freezes.
-// WHY?: *Ball going through the wall: Due to the collisions getting glitched, I haven't defined what happens when the ball gets
-//                                     stuck between the paddle and the wall.
-//       *The game freezes: Because the ball flies off into the distance until infinity.
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
@@ -356,12 +353,25 @@ namespace spin_pong
             }
         }
 
-        public void Update(Player player, Enemy enemy, StopWatch enemyStartTimer, StopWatch ballVelIncreaseTimer)
+        public void Respawn(RenderWindow window)
+        {
+            this.Body.SetXForm(new Vec2((window.Size.X / 2) / PixelsToMeter, (window.Size.Y / 2) / PixelsToMeter), 0);
+            this.RandomizeBallDirection();
+        }
+
+        public void Update(RenderWindow window, Player player, Enemy enemy, StopWatch enemyStartTimer, StopWatch ballVelIncreaseTimer)
         {
             double enemyStartElapsed = enemyStartTimer.ElapsedTime.Seconds;
             double ballVelIncreaseElapsed = ballVelIncreaseTimer.ElapsedTime.Seconds;
 
             Vec2 ballVelocity = this.Body.GetLinearVelocity();
+
+            // Respawn the ball, if it flies off-screen for some reason.
+            if (this.Body.GetPosition().X < 0 || this.Body.GetPosition().Y > window.Size.X / PixelsToMeter ||
+                this.Body.GetPosition().Y < 0 || this.Body.GetPosition().Y > window.Size.Y / PixelsToMeter)
+            {
+                this.Respawn(window);
+            }
 
             if (this.collisionWithWall)
             {
@@ -1107,15 +1117,15 @@ namespace spin_pong
             {
                 this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 5);
             }
-            else if (difficultySetting == "Medium")
+            if (difficultySetting == "Medium")
             {
                 this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 10);
             }
-            else if (difficultySetting == "Hard")
+            if (difficultySetting == "Hard")
             {
                 this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 15);
             }
-            else if (difficultySetting == "Impossible")
+            if (difficultySetting == "Impossible")
             {
                 this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2), 18);
             }
@@ -1224,6 +1234,17 @@ namespace spin_pong
 
         public override void Update(RenderWindow window)
         {
+            // Player wins
+            if (this.player.score == 3)
+            {
+                gameStateManager.ChangeState(window, new WinState(gameStateManager));
+            }
+            // Enemy wins
+            if (this.enemy.score == 3)
+            {
+                gameStateManager.ChangeState(window, new LoseState(gameStateManager));
+            }
+
             if (gamePaused)
             {
                 // Do nothing.
@@ -1237,7 +1258,7 @@ namespace spin_pong
                     this.world.Step(1 / 60.0f / subSteps, 6, 3);
 
                     // Fast moving physics related stuff here.
-                    this.ball.Update(this.player, this.enemy, this.enemyStartTimer, this.ballVelIncreaseTimer);
+                    this.ball.Update(window, this.player, this.enemy, this.enemyStartTimer, this.ballVelIncreaseTimer);
                     this.player.Update(window);
                     this.enemy.Update(this.ball);
                 }
@@ -1315,7 +1336,6 @@ namespace spin_pong
         private Font arial;
         private Text titleText;
         private Text playText;
-        private Text difficultyText;
         private Text quitText;
         private GameStateManager gameStateManager;
         public bool mouseOnPlayButton;
@@ -1338,13 +1358,6 @@ namespace spin_pong
 
             this.playText = new Text("Play", arial);
             this.playText.CharacterSize = 60;
-
-            //string difficultyFormat = string.Format("Difficulty: {0}", this.player.score);
-            //this.difficultyText = new Text(difficultyFormat, arial);
-            //this.difficultyText.CharacterSize = 80;
-
-            this.difficultyText = new Text("Difficulty: Beginner", arial);
-            this.difficultyText.CharacterSize = 80;
 
             this.quitText = new Text("Quit", arial);
             this.quitText.CharacterSize = 60;
@@ -1396,8 +1409,16 @@ namespace spin_pong
             {
                 window.Close();
             }
-        
+            if (e.Code == Keyboard.Key.W)
+            {
+                gameStateManager.ChangeState(window, new WinState(gameStateManager));
+            }
+            if (e.Code == Keyboard.Key.K)
+            {
+                gameStateManager.ChangeState(window, new LoseState(gameStateManager));
+            }      
         }
+
         public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
         {
             RenderWindow window = (RenderWindow)sender;
@@ -1738,6 +1759,326 @@ namespace spin_pong
             window.Draw(this.hardText);
             window.Draw(this.impossibleText);
             window.Draw(this.backText);
+        }
+    }
+
+
+    class WinState : GameState
+    {
+        private Font arial;
+        private Text titleText;
+        private Text playText;
+        private Text quitText;
+        private GameStateManager gameStateManager;
+        public bool mouseOnPlayButton;
+        public bool mouseOnQuitButton;
+
+        public WinState(GameStateManager gameStateManager)
+        {
+            this.gameStateManager = gameStateManager;
+        }
+
+        public override void Initialize(RenderWindow window)
+        {
+            // Set font.
+            this.arial = new Font("arial.ttf");
+
+            // Create menu buttons.
+            this.titleText = new Text("You win. Congratulations!", arial);
+            this.titleText.CharacterSize = 60;
+            this.titleText.Color = new Color(0, 100, 255);
+
+            this.playText = new Text("Play again", arial);
+            this.playText.CharacterSize = 60;
+
+            this.quitText = new Text("Quit", arial);
+            this.quitText.CharacterSize = 60;
+
+            // Center texts.
+            FloatRect titleTextRect = titleText.GetLocalBounds();
+            this.titleText.Origin = new Vector2f(titleTextRect.Left + titleTextRect.Width / 2, titleTextRect.Top + titleTextRect.Height / 2);
+            this.titleText.Position = new Vector2f(window.Size.X / 2, 100);
+
+            FloatRect playTextRect = playText.GetLocalBounds();
+            this.playText.Origin = new Vector2f(playTextRect.Left + playTextRect.Width / 2, playTextRect.Top + playTextRect.Height / 2);
+            this.playText.Position = new Vector2f(window.Size.X / 2, 400);
+
+            FloatRect quitTextRect = quitText.GetLocalBounds();
+            this.quitText.Origin = new Vector2f(quitTextRect.Left + quitTextRect.Width / 2, quitTextRect.Top + quitTextRect.Height / 2);
+            this.quitText.Position = new Vector2f(window.Size.X / 2, 500);
+
+            window.SetMouseCursorVisible(true);
+
+            BindEvents(window);
+        }
+
+        public override void BindEvents(RenderWindow window)
+        {
+            window.Closed += new EventHandler(OnWindowClose);
+            window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public override void UnbindEvents(RenderWindow window)
+        {
+            window.Closed -= new EventHandler(OnWindowClose);
+            window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public void OnWindowClose(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            window.Close();
+        }
+
+        public void OnKeyPress(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                window.Close();
+            }
+
+        }
+        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                // Transform the mouse position from window coordinates to world coordinates.
+                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+                // Retrieve the bounding boxes of the text objects.
+                FloatRect playTextBounds = playText.GetGlobalBounds();
+                FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+                // Hit tests.
+                if (playTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
+                }
+                if (quitTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    window.Close();
+                }
+            }
+        }
+
+        public override void Update(RenderWindow window)
+        {
+            // Transform the mouse position from window coordinates to world coordinates.
+            Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+            // Retrieve the bounding boxes of the text objects.
+            FloatRect playTextBounds = playText.GetGlobalBounds();
+            FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+            // Hit tests.
+            if (playTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnPlayButton = true;
+            }
+            else
+            {
+                mouseOnPlayButton = false;
+            }
+            if (quitTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnQuitButton = true;
+            }
+            else
+            {
+                mouseOnQuitButton = false;
+            }
+        }
+
+        public override void Draw(RenderWindow window)
+        {
+            if (!mouseOnPlayButton)
+            {
+                this.playText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.playText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnQuitButton)
+            {
+                this.quitText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.quitText.Color = new Color(255, 0, 0);
+            }
+
+            window.Draw(this.titleText);
+            window.Draw(this.playText);
+            window.Draw(this.quitText);
+        }
+    }
+
+
+    class LoseState : GameState
+    {
+        private Font arial;
+        private Text titleText;
+        private Text playText;
+        private Text quitText;
+        private GameStateManager gameStateManager;
+        public bool mouseOnPlayButton;
+        public bool mouseOnQuitButton;
+
+        public LoseState(GameStateManager gameStateManager)
+        {
+            this.gameStateManager = gameStateManager;
+        }
+
+        public override void Initialize(RenderWindow window)
+        {
+            // Set font.
+            this.arial = new Font("arial.ttf");
+
+            // Create menu buttons.
+            this.titleText = new Text("You lose. Try again?", arial);
+            this.titleText.CharacterSize = 60;
+            this.titleText.Color = new Color(0, 100, 255);
+
+            this.playText = new Text("Play again", arial);
+            this.playText.CharacterSize = 60;
+
+            this.quitText = new Text("Quit", arial);
+            this.quitText.CharacterSize = 60;
+
+            // Center texts.
+            FloatRect titleTextRect = titleText.GetLocalBounds();
+            this.titleText.Origin = new Vector2f(titleTextRect.Left + titleTextRect.Width / 2, titleTextRect.Top + titleTextRect.Height / 2);
+            this.titleText.Position = new Vector2f(window.Size.X / 2, 100);
+
+            FloatRect playTextRect = playText.GetLocalBounds();
+            this.playText.Origin = new Vector2f(playTextRect.Left + playTextRect.Width / 2, playTextRect.Top + playTextRect.Height / 2);
+            this.playText.Position = new Vector2f(window.Size.X / 2, 400);
+
+            FloatRect quitTextRect = quitText.GetLocalBounds();
+            this.quitText.Origin = new Vector2f(quitTextRect.Left + quitTextRect.Width / 2, quitTextRect.Top + quitTextRect.Height / 2);
+            this.quitText.Position = new Vector2f(window.Size.X / 2, 500);
+
+            window.SetMouseCursorVisible(true);
+
+            BindEvents(window);
+        }
+
+        public override void BindEvents(RenderWindow window)
+        {
+            window.Closed += new EventHandler(OnWindowClose);
+            window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public override void UnbindEvents(RenderWindow window)
+        {
+            window.Closed -= new EventHandler(OnWindowClose);
+            window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+        }
+
+        public void OnWindowClose(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            window.Close();
+        }
+
+        public void OnKeyPress(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                window.Close();
+            }
+
+        }
+        public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                // Transform the mouse position from window coordinates to world coordinates.
+                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+                // Retrieve the bounding boxes of the text objects.
+                FloatRect playTextBounds = playText.GetGlobalBounds();
+                FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+                // Hit tests.
+                if (playTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
+                }
+                if (quitTextBounds.Contains(mouse.X, mouse.Y))
+                {
+                    window.Close();
+                }
+            }
+        }
+
+        public override void Update(RenderWindow window)
+        {
+            // Transform the mouse position from window coordinates to world coordinates.
+            Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
+
+            // Retrieve the bounding boxes of the text objects.
+            FloatRect playTextBounds = playText.GetGlobalBounds();
+            FloatRect quitTextBounds = quitText.GetGlobalBounds();
+
+            // Hit tests.
+            if (playTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnPlayButton = true;
+            }
+            else
+            {
+                mouseOnPlayButton = false;
+            }
+            if (quitTextBounds.Contains(mouse.X, mouse.Y))
+            {
+                mouseOnQuitButton = true;
+            }
+            else
+            {
+                mouseOnQuitButton = false;
+            }
+        }
+
+        public override void Draw(RenderWindow window)
+        {
+            if (!mouseOnPlayButton)
+            {
+                this.playText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.playText.Color = new Color(255, 0, 0);
+            }
+
+            if (!mouseOnQuitButton)
+            {
+                this.quitText.Color = new Color(0, 70, 255);
+            }
+            else
+            {
+                this.quitText.Color = new Color(255, 0, 0);
+            }
+
+            window.Draw(this.titleText);
+            window.Draw(this.playText);
+            window.Draw(this.quitText);
         }
     }
 
