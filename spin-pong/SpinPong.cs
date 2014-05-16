@@ -7,7 +7,7 @@
     Be quick, the ball becomes faster and faster as time passes!
 
     FRAMEWORKS/LIBRARIES USED:
-    SFML is used for windowing, handling events and input, rendering and audio.
+    SFML is used for windowing, handling events and input, rendering graphics and audio.
     Box2D is used for collision detection.
     NetEXT is used for more accurate time-related functions.
 */
@@ -21,12 +21,12 @@
 //      * Hard: 15 spins.
 //      * Impossible: 18-20 spins.
 //
-// TO-DO: Change to fixed timestep, tie game logic to game time elapsed, not framerate
-// TO-DO: Pressing Right Mouse button or Space, "respawns" the ball if the ball glitches
-// TO-DO: Menus
-// TO-DO: Sounds
+// TO-DO: Change to fixed timestep, tie game logic to game time elapsed, not framerate.
+// TO-DO: Pressing Right Mouse button or Space, "respawns" the ball if the ball glitches.
+// TO-DO: Screen / State / Scene management. Menu -> Play. "Stack of States"?
+// TO-DO: Sounds.
 //
-// BUG: Sometimes when the ball gets between enemy and wall, the ball goes through the wall and the game essentially freezes
+// BUG: Sometimes when the ball gets between enemy and wall, the ball goes through the wall and the game essentially freezes.
 // WHY?: *Ball going through the wall: Due to the collisions getting glitched, I haven't defined what happens when the ball gets
 //                                     stuck between the paddle and the wall.
 //       *The game freezes: Because the ball flies off into the distance until infinity.
@@ -47,7 +47,7 @@ using Shape = Box2DX.Collision.Shape;
 
 
 namespace spin_pong
-{   // Box2D's ContactListener for collision detection
+{   // Box2D's ContactListener is implemented for collision detection.
     class MyContactListener : ContactListener
     {
         public override void Add(ContactPoint point)
@@ -58,7 +58,7 @@ namespace spin_pong
             Entity typeA = (Entity)point.Shape1.GetBody().GetUserData();
             Entity typeB = (Entity)point.Shape2.GetBody().GetUserData();
 
-            // Ball collision with Enemy
+            // Ball collision with Enemy.
             if ((typeA is Enemy && typeB is Ball) || (typeB is Ball && typeA is Enemy))
             {
                 Ball theBall = (Ball)typeB;
@@ -82,7 +82,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Player            
+            // Ball collision with Player.
             else if ((typeA is Player && typeB is Ball) || (typeB is Ball && typeA is Player))
             {
                 Ball theBall = (Ball)typeB;
@@ -106,7 +106,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Wall
+            // Ball collision with Wall.
             else if ((typeA is Ball && typeB is Wall) || (typeB is Wall && typeA is Ball))
             {
                 Ball theBall = (Ball)typeA;
@@ -118,7 +118,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Goal
+            // Ball collision with Goal.
             else if ((typeA is Ball && typeB is Goal) || (typeB is Goal && typeA is Ball))
             {
                 Ball theBall = (Ball)typeA;
@@ -140,7 +140,7 @@ namespace spin_pong
                 }
             }
 
-            // Player collision with Wall
+            // Player collision with Wall.
             else if ((typeA is Player && typeB is Wall) || (typeB is Wall && typeA is Player))
             {
                 Player thePlayer = (Player)typeA;
@@ -153,7 +153,7 @@ namespace spin_pong
 
             }
 
-            // Enemy collision with Wall
+            // Enemy collision with Wall.
             else if ((typeA is Enemy && typeB is Wall) || (typeB is Wall && typeA is Enemy))
             {
                 Enemy theEnemy = (Enemy)typeA;
@@ -173,7 +173,7 @@ namespace spin_pong
             Entity typeA = (Entity)point.Shape1.GetBody().GetUserData();
             Entity typeB = (Entity)point.Shape2.GetBody().GetUserData();
 
-            // Ball collision with Enemy
+            // Ball collision with Enemy.
             if ((typeA is Enemy && typeB is Ball) || (typeB is Ball && typeA is Enemy))
             {
                 Ball theBall = (Ball)typeB;
@@ -197,7 +197,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Player
+            // Ball collision with Player.
             else if ((typeA is Player && typeB is Ball) || (typeB is Ball && typeA is Player))
             {
                 Ball theBall = (Ball)typeB;
@@ -221,7 +221,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Wall
+            // Ball collision with Wall.
             else if ((typeA is Ball && typeB is Wall) || (typeB is Ball && typeA is Wall))
             {
                 Ball theBall = (Ball)typeA;
@@ -233,7 +233,7 @@ namespace spin_pong
                 }
             }
 
-            // Ball collision with Goal
+            // Ball collision with Goal.
             else if ((typeA is Ball && typeB is Goal) || (typeB is Goal && typeA is Ball))
             {
                 Ball theBall = (Ball)typeA;
@@ -246,7 +246,7 @@ namespace spin_pong
                 }
             }
 
-            // Player collision with Wall
+            // Player collision with Wall.
             else if ((typeA is Player && typeB is Wall) || (typeB is Wall && typeA is Player))
             {
                 Player thePlayer = (Player)typeA;
@@ -259,7 +259,7 @@ namespace spin_pong
                 thePlayer.collisionWithWall = false;
             }
 
-            // Enemy collision with Wall
+            // Enemy collision with Wall.
             else if ((typeA is Enemy && typeB is Wall) || (typeB is Wall && typeA is Enemy))
             {
                 Enemy theEnemy = (Enemy)typeA;
@@ -278,8 +278,8 @@ namespace spin_pong
 
     public class Entity
     {
-        // Box2D doesn't use pixels as units, but meters
-        // To work correctly with pixels, convert meters to pixels
+        // Box2D doesn't use pixels as units, but meters.
+        // To work correctly with pixels, convert meters to pixels.
         public const float PixelsToMeter = 32.0f;
     }
 
@@ -309,30 +309,30 @@ namespace spin_pong
 
         public Ball(World world, float positionX, float positionY)
         {
-            // We need to define a body with the position
+            // Define a body with a position.
             BodyDef ballBodyDef = new BodyDef();
             ballBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
 
-            // Create the physics body
+            // Create the physics body.
             this.ballBody = world.CreateBody(ballBodyDef);
 
-            // Set user data in the body
+            // Set user data in the body.
             this.ballBody.SetUserData(this);
 
-            // Define a new shape def
+            // Define a shape definition.
             this.ballPoly = new PolygonDef();
             this.ballPoly.IsSensor = true;
             this.ballPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
             this.ballPoly.Density = 1.0f;
 
-            // Create a texture from filename
+            // Create a texture from filename.
             Texture texture = new Texture("ball2_24x24.png");
 
-            // Create a sprite based on texture
+            // Create a sprite based on texture.
             this.ballSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
             this.ballSprite.Position = new Vector2f(PixelsToMeter * ballBody.GetPosition().X, PixelsToMeter * ballBody.GetPosition().Y);
 
-            // Finalize the shape and body
+            // Finalize the shape and body.
             this.ballBody.CreateShape(ballPoly);
             this.ballBody.SetMassFromShapes();
 
@@ -340,6 +340,7 @@ namespace spin_pong
             RandomizeBallDirection();
         }
 
+        // Four possible directions.
         public void RandomizeBallDirection()
         {
             if (this.random.Next(0, 3) == 0)
@@ -377,7 +378,7 @@ namespace spin_pong
             {
                 ballVelocity.X *= -1;
 
-                // Player moving up
+                // Player moving up.
                 if (player.Body.GetLinearVelocity().Y < 0)
                 {
                     ballVelocity.Y -= 4;
@@ -395,7 +396,7 @@ namespace spin_pong
                         spinCounter = 0;
                     }
                 }
-                // Player moving down
+                // Player moving down.
                 else if (player.Body.GetLinearVelocity().Y > 0)
                 {
                     ballVelocity.Y += 4;
@@ -442,7 +443,7 @@ namespace spin_pong
                 this.collisionWithPaddleBottom = false;
             }
 
-            // Enemy gets a score
+            // Enemy gets a score.
             if (this.collisionWithPlayerGoal)
             {
                 this.Body.SetXForm(new Vec2(player.Body.GetPosition().X + (25 / PixelsToMeter), player.Body.GetPosition().Y), 0);
@@ -453,7 +454,7 @@ namespace spin_pong
                 this.playerStart = true;
             }
 
-            // Player gets a score
+            // Player gets a score.
             if (this.collisionWithEnemyGoal)
             {
                 this.Body.SetXForm(new Vec2(enemy.Body.GetPosition().X - (24 / PixelsToMeter), enemy.Body.GetPosition().Y), 0);
@@ -464,18 +465,18 @@ namespace spin_pong
                 this.enemyStart = true;
             }
 
-            // After ball collides with player goal...
+            // After ball collides with player goal.
             if (this.playerStart)
             {
                 this.Body.SetXForm(new Vec2((player.Body.GetPosition().X + 24 / PixelsToMeter), player.Body.GetPosition().Y), 0);
                 ballVelocity.X = 0;
                 spinCounter = 0;
 
-                // Player launches ball
+                // Player launches ball.
                 if (this.playerLaunch)
                 {
 
-                    // Choose ball direction based on player velocity
+                    // Choose ball direction based on player velocity.
                     if (player.Body.GetLinearVelocity().Y < 0)
                     {
                         ballVelocity.Y = -6;
@@ -490,7 +491,7 @@ namespace spin_pong
                         this.playerStart = false;
                         this.playerLaunch = false;
                     }
-                    // Player not moving, randomize ball direction
+                    // Player not moving, randomize ball direction.
                     else
                     {
                         if (this.random.Next(0, 2) == 0)
@@ -511,13 +512,13 @@ namespace spin_pong
                 }
             }
 
-            // After ball collides with enemy goal...
+            // After ball collides with enemy goal.
             if (this.enemyStart)
             {
                 enemyStartTimer.Start();
                 spinCounter = 0;
 
-                // Enemy launches the ball in random direction
+                // Enemy launches the ball in random direction.
                 if (this.random.Next(0, 2) == 0)
                 {
                     ballVelocity.X = 0;
@@ -543,7 +544,7 @@ namespace spin_pong
                     }
                 }
             }
-            // Gradually increase ball x-velocity, as time passes
+            // Gradually increase ball x-velocity, as time passes.
             else
             {
                 ballVelIncreaseTimer.Start();
@@ -593,19 +594,20 @@ namespace spin_pong
 
         public Player(World world, float positionX, float positionY)
         {
-            // We need to define a body with the position
+            // Define a body with a position.
             BodyDef playerBodyDef = new BodyDef();
             playerBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
 
-            // Create the physics body
+            // Create the physics body.
             this.playerBody = world.CreateBody(playerBodyDef);
-            // Set player body as a bullet (for continuous collision detection on high velocities)
+
+            // Set player body as a bullet (for continuous collision detection on high velocities).
             this.playerBody.SetBullet(true);
 
-            // Set user data in the body
+            // Set user data in the body.
             this.playerBody.SetUserData(this);
 
-            // Define a new shape definitions
+            // Define new shape definitions.
             this.rightShape = new PolygonDef() { UserData = "side", IsSensor = true, Density = 1.0f };
             // (4px, 124px) fixture at (player.body: 22, 2)
             this.rightShape.SetAsBox(2f / PixelsToMeter, (HalfHeight - 2) / PixelsToMeter, new Vec2(10 / PixelsToMeter, 2 / PixelsToMeter), 0);
@@ -618,14 +620,14 @@ namespace spin_pong
             // (24px, 4px) fixture at (player.body: 0, 128)
             this.bottomShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(-12 / PixelsToMeter, HalfHeight / PixelsToMeter), 0);
 
-            // Create a texture from filename
+            // Create a texture from filename.
             Texture texture = new Texture("paddle2_24x128.png");
 
-            // Create a sprite based on texture
+            // Create a sprite based on texture.
             this.playerSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
             this.playerSprite.Position = new Vector2f(PixelsToMeter * playerBody.GetPosition().X, PixelsToMeter * playerBody.GetPosition().Y);
 
-            // Finalize the shape and body
+            // Finalize the shape and body.
             this.playerBody.CreateShape(rightShape);
             this.playerBody.CreateShape(topShape);
             this.playerBody.CreateShape(bottomShape);
@@ -635,38 +637,38 @@ namespace spin_pong
         public void Update(RenderWindow window)
         {
             Vec2 playerVelocity = new Vec2();
-            // Transform the mouse position from window coordinates to world coordinates
+            // Transform the mouse position from window coordinates to world coordinates.
             Vector2f mousePos = window.MapPixelToCoords(Mouse.GetPosition(window)) / PixelsToMeter;
             float playerPosY = this.Body.GetPosition().Y;
 
-            // Player collides with wall
+            // Player collides with wall.
             if (this.collisionWithWall)
             {
                 playerVelocity.Y = 0;
 
-                // Collision with top wall
+                // Collision with top wall.
                 if (playerPosY < ((window.Size.Y) / 2) / PixelsToMeter)
                 {
-                    // End collision
+                    // End collision.
                     if (this.collisionWithWall && mousePos.Y > (Wall.HalfHeight + Wall.HalfHeight + HalfHeight) / PixelsToMeter)
                     {
                         this.collisionWithWall = false;
                     }
                 }
-                // Collision with bottom wall
+                // Collision with bottom wall.
                 else if (playerPosY > ((window.Size.Y) / 2) / PixelsToMeter)
                 {
-                    // End collision
+                    // End collision.
                     if (this.collisionWithWall && mousePos.Y < (window.Size.Y - (Wall.HalfHeight + Wall.HalfHeight + HalfHeight)) / PixelsToMeter)
                     {
                         this.collisionWithWall = false;
                     }
                 }
             }
-            // No collisions
+            // No collisions.
             else
             {
-                // Mouse cursor up or down from player's center
+                // Moving mouse cursor up or down from player's center.
                 if (mousePos.Y - playerPosY > 0.01f || mousePos.Y - playerPosY < -0.01f)
                 {
                     playerVelocity.Y = (mousePos.Y - playerPosY) * 60;
@@ -701,17 +703,17 @@ namespace spin_pong
 
         public Enemy(World world, float positionX, float positionY)
         {
-            // We need to define a body with the position
+            // Define a body with a position.
             BodyDef enemyBodyDef = new BodyDef();
             enemyBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
 
-            // Create the physics body
+            // Create the physics body.
             this.enemyBody = world.CreateBody(enemyBodyDef);
 
-            // Set user data in the body
+            // Set user data in the body.
             this.enemyBody.SetUserData(this);
 
-            // Define a new shape definition
+            // Define new shape definitions.
             this.sideShape = new PolygonDef();
             this.sideShape.IsSensor = true;
             this.sideShape.Density = 1.0f;
@@ -719,7 +721,6 @@ namespace spin_pong
             this.sideShape.SetAsBox(2f / PixelsToMeter, (HalfHeight - 2) / PixelsToMeter, new Vec2(-10 / PixelsToMeter, 2 / PixelsToMeter), 0);
             this.sideShape.UserData = "side";
 
-            // Define a new shape definition
             this.topShape = new PolygonDef();
             this.topShape.IsSensor = true;
             this.topShape.Density = 1.0f;
@@ -727,7 +728,6 @@ namespace spin_pong
             this.topShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(3 / PixelsToMeter, -HalfHeight / PixelsToMeter), 0);
             this.topShape.UserData = "top";
 
-            // Define a new shape definition
             this.bottomShape = new PolygonDef();
             this.bottomShape.IsSensor = true;
             this.bottomShape.Density = 1.0f;
@@ -735,14 +735,14 @@ namespace spin_pong
             this.bottomShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(3 / PixelsToMeter, HalfHeight / PixelsToMeter), 0);
             this.bottomShape.UserData = "bottom";
 
-            // Create a texture from filename
+            // Create a texture from filename.
             Texture texture = new Texture("paddle2_24x128.png");
 
-            // Create a sprite based on texture
+            // Create a sprite based on texture.
             this.enemySprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
             this.enemySprite.Position = new Vector2f(PixelsToMeter * enemyBody.GetPosition().X, PixelsToMeter * enemyBody.GetPosition().Y);
 
-            // Finalize the shape and body
+            // Finalize the shape and body.
             this.enemyBody.CreateShape(sideShape);
             this.enemyBody.CreateShape(topShape);
             this.enemyBody.CreateShape(bottomShape);
@@ -755,39 +755,39 @@ namespace spin_pong
             Vec2 enemyVelocity = this.Body.GetLinearVelocity();
             Vec2 ballVelocity = ball.Body.GetLinearVelocity();
 
-            // Ball moves to the right
+            // Ball moves to the right.
             if (ballVelocity.X > 0)
             {
                 if (this.collisionWithWall)
                 {
                     enemyVelocity.Y = 0;
 
-                    // Collision with top wall
+                    // Collision with top wall.
                     if (this.Body.GetPosition().Y < 500 / PixelsToMeter)
                     {
-                        //  End collision with wall, when ball.pos.Y > enemy.pos.Y
+                        //  End collision with wall, when ball.pos.Y > enemy.pos.Y.
                         if (this.collisionWithWall && ball.Body.GetPosition().Y > this.Body.GetPosition().Y)
                         {
                             this.collisionWithWall = false;
                         }
                     }
-                    // Collision with bottom wall
+                    // Collision with bottom wall.
                     else
                     {
-                        //  End collision with wall, when ball.pos.Y < enemy.pos.Y
+                        //  End collision with wall, when ball.pos.Y < enemy.pos.Y.
                         if (this.collisionWithWall && ball.Body.GetPosition().Y < this.Body.GetPosition().Y)
                         {
                             this.collisionWithWall = false;
                         }
                     }
                 }
-                // No collision
+                // No collision.
                 else
                 {
-                    // Move down if the ball is down from enemy
+                    // Move down if the ball is down from enemy.
                     if (ball.Body.GetPosition().Y > this.Body.GetPosition().Y + 5 / PixelsToMeter)
                     {
-                        // Ball going down
+                        // Ball moving down.
                         if (ballVelocity.Y > 0)
                         {
                             if (ball.spinCounter < 15)
@@ -800,7 +800,7 @@ namespace spin_pong
                                 Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
-                        // Ball going up
+                        // Ball moving up.
                         else if (ballVelocity.Y < 0)
                         {
                             if (ball.spinCounter < 15)
@@ -818,10 +818,10 @@ namespace spin_pong
                             enemyVelocity.Y = 0;
                         }
                     }
-                    // Move up if the ball is up from enemy
+                    // Move up if the ball is up from enemy.
                     else if (ball.Body.GetPosition().Y < this.Body.GetPosition().Y - 5 / PixelsToMeter)
                     {
-                        // Ball going down
+                        // Ball moving down.
                         if (ballVelocity.Y > 0)
                         {
                             if (ball.spinCounter < 15)
@@ -834,7 +834,7 @@ namespace spin_pong
                                 Console.WriteLine("EnemyVelY: " + enemyVelocity.Y);
                             }
                         }
-                        // Ball going up
+                        // Ball moving up.
                         else if (ballVelocity.Y < 0)
                         {
                             if (ball.spinCounter < 15)
@@ -852,15 +852,15 @@ namespace spin_pong
                             enemyVelocity.Y = 0;
                         }
                     }
-                    // Without this else, Enemy velocity goes from negative to positive in an instant,
-                    // introducing bugs when enemy is colliding
+                    // Without this else, enemy velocity goes from negative to positive in an instant,
+                    // introducing bugs when enemy is colliding.
                     else
                     {
                         enemyVelocity.Y = 0;
                     }
                 }
             }
-            // Ball moves to the left
+            // Ball moves to the left.
             else
             {
                 enemyVelocity.Y = 0;
@@ -889,29 +889,29 @@ namespace spin_pong
 
         public Wall(World world, float positionX, float positionY)
         {
-            // We need to define a body with the position
+            // Define a body with a position.
             BodyDef wallBodyDef = new BodyDef();
             wallBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
 
-            // Create the physics body
+            // Create the physics body.
             this.wallBody = world.CreateBody(wallBodyDef);
 
-            // Set user data in the body
+            // Set user data in the body.
             this.wallBody.SetUserData(this);
 
-            // Define a new shape def
+            // Define a shape definition.
             this.wallPoly = new PolygonDef();
             this.wallPoly.IsSensor = true;
             this.wallPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
 
-            // Create a texture from filename
+            // Create a texture from filename.
             Texture texture = new Texture("border2_1024x32.png");
 
-            // Create a sprite based on texture
+            // Create a sprite based on texture.
             this.wallSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
             this.wallSprite.Position = new Vector2f(PixelsToMeter * wallBody.GetPosition().X, PixelsToMeter * wallBody.GetPosition().Y);
 
-            // Finalize the shape and body
+            // Finalize the shape and body.
             this.wallBody.CreateShape(wallPoly);
             this.wallBody.SetMassFromShapes();
         }
@@ -940,29 +940,29 @@ namespace spin_pong
 
         public Goal(World world, float positionX, float positionY)
         {
-            // We need to define a body with the position
+            // Define a body with a position.
             BodyDef goalBodyDef = new BodyDef();
             goalBodyDef.Position.Set(positionX / PixelsToMeter, positionY / PixelsToMeter);
 
-            // Create the physics body
+            // Create the physics body.
             this.goalBody = world.CreateBody(goalBodyDef);
 
-            // Set user data in the body
+            // Set user data in the body.
             this.goalBody.SetUserData(this);
 
-            // Define a new shape def
+            // Define a shape definition.
             this.goalPoly = new PolygonDef();
             this.goalPoly.IsSensor = true;
             this.goalPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
 
-            // Create a texture from filename
+            // Create a texture from filename.
             Texture texture = new Texture("goal_6x1024.png");
 
-            // Create a sprite based on texture
+            // Create a sprite based on texture.
             this.goalSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
             this.goalSprite.Position = new Vector2f(PixelsToMeter * goalBody.GetPosition().X, PixelsToMeter * goalBody.GetPosition().Y);
 
-            // Finalize the shape and body
+            // Finalize the shape and body.
             this.goalBody.CreateShape(goalPoly);
             this.goalBody.SetMassFromShapes();
         }
@@ -975,17 +975,71 @@ namespace spin_pong
             window.Draw(this.Sprite);
         }
     }
-
-
-    abstract class Scene
+    
+    public class GameStateManager
     {
-        public Scene() { }
-        public virtual void Draw() { }
-        public virtual void Update() { }
+
+        public List<GameState> gameStates = new List<GameState>();
+        private int currentState;
+
+        public const int MENUSTATE = 0;
+        public const int PLAYSTATE = 1;
+
+        public GameStateManager(RenderWindow window)
+        {
+            gameStates = new List<GameState>();
+
+            this.currentState = MENUSTATE;
+            gameStates.Add(new MenuState(this));
+            gameStates[this.currentState].Initialize(window);
+        }
+
+        public void ChangeState(RenderWindow window, int state, GameState gameState)
+        {
+            gameStates[this.currentState].UnbindEvents(window);
+            this.currentState = state;
+            gameStates.Add(gameState);
+            gameStates[this.currentState].Initialize(window);
+
+            GetCurrentState();
+        }
+
+        public void GetCurrentState()
+        {
+            Console.WriteLine(gameStates[this.currentState]);
+            Console.WriteLine(this.currentState);
+        }
+
+        public void Update(RenderWindow window)
+        {
+            gameStates[this.currentState].Update(window);
+        }
+
+        public void Draw(RenderWindow window)
+        {
+            // Clear screen.
+            window.Clear();
+
+            // Render graphics.
+            gameStates[this.currentState].Draw(window);
+
+            // Update display.
+            window.Display();
+        }
+    }
+
+    public class GameState
+    {
+        public GameState() { }
+        public virtual void Initialize(RenderWindow window) { }
+        public virtual void BindEvents(RenderWindow window) { }
+        public virtual void UnbindEvents(RenderWindow window) { }
+        public virtual void Update(RenderWindow window) { }
+        public virtual void Draw(RenderWindow window) { }
     }
 
 
-    class GameScene : Scene
+    class PlayState : GameState
     {
         private World world;
         private Font arial;
@@ -1003,27 +1057,35 @@ namespace spin_pong
         private Goal enemyGoal;
         private Sprite midlineSprite;
         private MyContactListener contactListener;
+        private StopWatch enemyStartTimer; 
+        private StopWatch ballVelIncreaseTimer;
+        private GameStateManager gsm;
         private float velocityX;
         public bool gamePaused = false;
 
-        public GameScene(RenderWindow window)
+        public PlayState(GameStateManager gsm)
         {
-            // Set gravity value
+            this.gsm = gsm;
+        }
+
+        public override void Initialize(RenderWindow window)
+        {
+            // Set gravity value.
             Vec2 gravity = new Vec2(0.0f, 0.0f);
 
-            // Create world bounding box, where simulations occur
+            // Create world bounding box, where simulations occur.
             AABB worldAABB = new AABB();
             worldAABB.LowerBound.Set(0.0f, 0.0f);
             worldAABB.UpperBound.Set(window.Size.X, window.Size.Y);
 
-            // Set up the physics world
+            // Set up the physics world.
             this.world = new World(worldAABB, gravity, false);
 
-            // Set up a contact listener for collision detection/callbacks
+            // Set up a contact listener for collision detection/callbacks.
             contactListener = new MyContactListener();
             this.world.SetContactListener(contactListener);
 
-            // Create objects
+            // Create objects.
             this.player = new Player(this.world, 100, (window.Size.Y / 2));
             this.enemy = new Enemy(this.world, window.Size.X - 100, (window.Size.Y / 2));
             this.ball = new Ball(this.world, (window.Size.X / 2), (window.Size.Y / 2));
@@ -1032,25 +1094,35 @@ namespace spin_pong
             this.playerGoal = new Goal(this.world, 3, (window.Size.Y / 2));
             this.enemyGoal = new Goal(this.world, window.Size.X - 3, (window.Size.Y / 2));
 
-            // Set font
+            // Set font.
             this.arial = new Font("arial.ttf");
 
-            // Create mid-line
+            // Create mid-line.
             Texture texture = new Texture("midline_10x1024.png");
             this.midlineSprite = new Sprite(texture);
             this.midlineSprite.Position = new Vector2f(((window.Size.X / 2) - 5), 0);
 
+            // Create a text object.
             this.gamePausedText = new Text("PAUSED", arial);
             this.gamePausedText.CharacterSize = 120;
             this.gamePausedText.Color = new Color(255, 255, 255);
-            // Center text
+
+            // Center text.
             FloatRect pauseTextRect = gamePausedText.GetLocalBounds();
             this.gamePausedText.Origin = new Vector2f(pauseTextRect.Left + pauseTextRect.Width / 2, pauseTextRect.Top + pauseTextRect.Height / 2);
             this.gamePausedText.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 2);
 
-            window.SetMouseCursorVisible(true);
+            window.SetMouseCursorVisible(false);
 
-            // Setup event handlers
+            this.enemyStartTimer = new StopWatch();
+            this.ballVelIncreaseTimer = new StopWatch();
+
+            // Setup event handlers.
+            BindEvents(window);
+        }
+
+        public override void BindEvents(RenderWindow window)
+        {
             window.Closed += new EventHandler(OnWindowClose);
             window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
             window.KeyReleased += new EventHandler<KeyEventArgs>(OnKeyRelease);
@@ -1058,9 +1130,18 @@ namespace spin_pong
             window.MouseButtonReleased += new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
         }
 
+        public override void UnbindEvents(RenderWindow window)
+        {
+            window.Closed -= new EventHandler(OnWindowClose);
+            window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.KeyReleased -= new EventHandler<KeyEventArgs>(OnKeyRelease);
+            window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
+            window.MouseButtonReleased -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
+        }
+
         public void DrawTexts(RenderWindow window)
         {
-            // Create text objects
+            // Create text objects.
             string playerScoreFormat = string.Format("{0}", this.player.score);
             this.playerScoreText = new Text(playerScoreFormat, arial);
             this.playerScoreText.Position = new Vector2f(((window.Size.X / 2) - 100), 60);
@@ -1080,7 +1161,7 @@ namespace spin_pong
             this.spinCounterText.Style = Text.Styles.Italic;
             this.spinCounterText.Color = new Color(110, 86, 0);
 
-            // Display ball speed always as positive float
+            // Display ball speed always as positive float.
             if (this.ball.Body.GetLinearVelocity().X < 0)
             {
                 this.velocityX = -this.ball.Body.GetLinearVelocity().X;
@@ -1116,18 +1197,6 @@ namespace spin_pong
 
             if (e.Button == Mouse.Button.Left)
             {
-                // Transform the mouse position from window coordinates to world coordinates
-                Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
-
-                // Retrieve the bounding box of the sprite
-                FloatRect bounds = enemyScoreText.GetGlobalBounds();
-
-                // Hit test
-                if (bounds.Contains(mouse.X, mouse.Y))
-                {
-                    Console.WriteLine("Lol");
-                }
-
                 this.ball.playerLaunch = true;
             }
         }
@@ -1148,7 +1217,8 @@ namespace spin_pong
 
             if (e.Code == Keyboard.Key.Escape)
             {
-                window.Close();
+                gsm.ChangeState(window, 0, new MenuState(gsm));
+                Console.WriteLine("ESC pressed.");
             }
             else if (e.Code == Keyboard.Key.Up)
             {
@@ -1164,7 +1234,7 @@ namespace spin_pong
                 {
                     gamePaused = false;
 
-                    // When unpausing, set mouse position to player body position
+                    // When unpaused, set mouse position to player body position.
                     int playerPosX = (int)this.player.Body.GetPosition().X * 32;
                     int playerPosY = (int)this.player.Body.GetPosition().Y * 32;
                     Mouse.SetPosition(new Vector2i(playerPosX, playerPosY), window);
@@ -1190,30 +1260,30 @@ namespace spin_pong
             }
         }
 
-        public void Update(StopWatch enemyStartTimer, StopWatch ballVelIncreaseTimer, RenderWindow window)
+        public override void Update(RenderWindow window)
         {
             if (gamePaused)
             {
-                // Do nothing
+                // Do nothing.
             }
             else
             {
-                // Simulate a smaller timestep, to prevent tunneling on high velocity
+                // Simulate a smaller timestep, to prevent tunneling on high velocities.
                 float subSteps = 30;
                 for (int i = 0; i < subSteps; i++)
                 {
                     this.world.Step(1 / 60.0f / subSteps, 6, 3);
 
-                    // Fast moving physics related stuff here
-                    this.ball.Update(this.player, this.enemy, enemyStartTimer, ballVelIncreaseTimer);
+                    // Fast moving physics related stuff here.
+                    this.ball.Update(this.player, this.enemy, this.enemyStartTimer, this.ballVelIncreaseTimer);
                     this.player.Update(window);
                     this.enemy.Update(this.ball);
                 }
-                // Slow moving physics related stuff here
+                // Slow moving physics related stuff here.
             }
         }
 
-        public void Draw(RenderWindow window)
+        public override void Draw(RenderWindow window)
         {
             DrawTexts(window);
             this.player.Draw(window);
@@ -1233,7 +1303,7 @@ namespace spin_pong
     }
 
 
-    class MenuScene : Scene
+    class MenuState : GameState
     {
         private Font arial;
         private Text titleText;
@@ -1241,23 +1311,30 @@ namespace spin_pong
         private Text quitText;
         public bool mouseOnPlayButton;
         public bool mouseOnQuitButton;
+        private GameStateManager gsm;
 
-        public MenuScene(RenderWindow window)
+        public MenuState(GameStateManager gsm)
         {
-            // Set font
+            this.gsm = gsm;
+        }
+
+        public override void Initialize(RenderWindow window)
+        {
+            // Set font.
             this.arial = new Font("arial.ttf");
 
-            // Create menu buttons
+            // Create menu buttons.
             this.titleText = new Text("Spin Pong", arial);
             this.titleText.CharacterSize = 100;
             this.titleText.Color = new Color(0, 100, 255);
+
             this.playText = new Text("Play", arial);
             this.playText.CharacterSize = 80;
 
             this.quitText = new Text("Quit", arial);
             this.quitText.CharacterSize = 80;
-            
-            // Center texts
+
+            // Center texts.
             FloatRect titleTextRect = titleText.GetLocalBounds();
             this.titleText.Origin = new Vector2f(titleTextRect.Left + titleTextRect.Width / 2, titleTextRect.Top + titleTextRect.Height / 2);
             this.titleText.Position = new Vector2f(window.Size.X / 2, 100);
@@ -1272,10 +1349,22 @@ namespace spin_pong
 
             window.SetMouseCursorVisible(true);
 
-            // Setup event handlers
+            BindEvents(window);
+        }
+
+        public override void BindEvents(RenderWindow window)
+        {
+            // Setup event handlers.
             window.Closed += new EventHandler(OnWindowClose);
+            window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
             window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
-            window.MouseButtonReleased += new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
+        }
+
+        public override void UnbindEvents(RenderWindow window)
+        {
+            window.Closed -= new EventHandler(OnWindowClose);
+            window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
+            window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
         }
 
         public void OnWindowClose(object sender, EventArgs e)
@@ -1285,61 +1374,61 @@ namespace spin_pong
             window.Close();
         }
 
+        public void OnKeyPress(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                window.Close();
+            }
+        
+        }
         public void OnMouseButtonPress(object sender, MouseButtonEventArgs e)
         {
             RenderWindow window = (RenderWindow)sender;
 
             if (e.Button == Mouse.Button.Left)
             {
-                // Transform the mouse position from window coordinates to world coordinates
+                // Transform the mouse position from window coordinates to world coordinates.
                 Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
 
-                // Retrieve the bounding boxes of the text objects
+                // Retrieve the bounding boxes of the text objects.
                 FloatRect playTextBounds = playText.GetGlobalBounds();
 
                 FloatRect quitTextBounds = quitText.GetGlobalBounds();
 
-                // Hit tests
+                // Hit tests.
                 if (playTextBounds.Contains(mouse.X, mouse.Y))
                 {
-                    Console.WriteLine("PLAY button clicked.");
+                    gsm.ChangeState(window, 1, new PlayState(gsm));
                 }
                 if (quitTextBounds.Contains(mouse.X, mouse.Y))
                 {
-                    Console.WriteLine("QUIT button clicked.");
+                    window.Close();
                 }
             }
         }
 
-        public void OnMouseButtonRelease(object sender, MouseButtonEventArgs e)
+        public override void Update(RenderWindow window)
         {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Button == Mouse.Button.Left)
-            {
-
-            }
-        }
-
-        public void Update(RenderWindow window)
-        {
-            // Transform the mouse position from window coordinates to world coordinates
+            // Transform the mouse position from window coordinates to world coordinates.
             Vector2f mouse = window.MapPixelToCoords(Mouse.GetPosition(window));
 
-            // Retrieve the bounding boxes of the text objects
+            // Retrieve the bounding boxes of the text objects.
             FloatRect playTextBounds = playText.GetGlobalBounds();
             FloatRect quitTextBounds = quitText.GetGlobalBounds();
 
-            // Hit tests
+            // Hit tests.
             if (playTextBounds.Contains(mouse.X, mouse.Y))
             {
                 mouseOnPlayButton = true;
-                Console.WriteLine("I am on PLAY text.");
+                Console.WriteLine("Mouse cursor on PLAY button.");
             }
             else if (quitTextBounds.Contains(mouse.X, mouse.Y))
             {
                 mouseOnQuitButton = true;
-                Console.WriteLine("I am on QUIT text.");
+                Console.WriteLine("Mouse cursor on QUIT button.");
             }
             else
             {
@@ -1348,11 +1437,11 @@ namespace spin_pong
             }
         }
 
-        public void Draw(RenderWindow window)
+        public override void Draw(RenderWindow window)
         {
             if (!mouseOnPlayButton)
             {
-                this.playText.Color = new Color(0, 100, 255);
+                this.playText.Color = new Color(0, 70, 255);
             }
             else
             {
@@ -1361,7 +1450,7 @@ namespace spin_pong
 
             if (!mouseOnQuitButton)
             {
-                this.quitText.Color = new Color(0, 100, 255);
+                this.quitText.Color = new Color(0, 70, 255);
             }
             else
             {
@@ -1373,6 +1462,8 @@ namespace spin_pong
             window.Draw(this.quitText);
         }
     }
+
+
     class Pong
     {
         public const int WindowWidth = 1024;
@@ -1381,37 +1472,28 @@ namespace spin_pong
 
         static void Main()
         {
-            // Create window
+            // Create game window.
             RenderWindow window = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), Title);
+
             window.SetKeyRepeatEnabled(false);
-            //window.SetVerticalSyncEnabled(true);
             window.SetFramerateLimit(60);
+            //window.SetVerticalSyncEnabled(true);
 
-            //GameScene firstScene = new GameScene(window);
-            MenuScene mainMenu = new MenuScene(window);
-
-            StopWatch enemyStartTimer = new StopWatch();
-            StopWatch ballVelIncreaseTimer = new StopWatch();
-
-            // Main loop
+            // Create a manager for game states.
+            GameStateManager gameStateManager = new GameStateManager(window);
+            
+            // Main loop.
             while (window.IsOpen())
             {
-                // Handle events
+                // Handle events.
                 window.DispatchEvents();
 
-                // Update objects
-                //firstScene.Update(enemyStartTimer, ballVelIncreaseTimer, window);
-                mainMenu.Update(window);
+                // Update objects.
+                gameStateManager.Update(window);
 
-                // Clear screen
-                window.Clear();
+                // Render graphics.
+                gameStateManager.Draw(window);
 
-                // Render everything
-                //firstScene.Draw(window);
-                mainMenu.Draw(window);
-
-                // Update the display
-                window.Display();
             }
         }
     }
