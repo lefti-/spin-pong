@@ -4,6 +4,7 @@
 
     YOUR GOAL:
         - Apply spin to the ball. After certain amount of spin, your chances of scoring are MUCH higher.
+        - To apply spin: when hitting the ball, move paddle to the same direction where the ball moves.
         - Score 3 points to win.
         - Be quick, the ball becomes faster and faster as time passes!
 
@@ -17,7 +18,17 @@
 // CHECKLIST
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// TO-DO: Sounds.
+//  SOUND ATTRIBUTIONS:
+//              - "menu_click_forward.wav" - https://www.freesound.org/people/NenadSimic/sounds/171697/
+//              - "menu_click_back.wav" - https://www.freesound.org/people/Callum_Sharp279/sounds/198778/
+//              - "ballhitspaddle.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
+//                  * Edited to two .wav files: "ball_hits_player.wav", "ball_hits_enemy.wav".
+//              - "scoring_point.wav" - https://www.freesound.org/people/timgormly/sounds/170155/
+//              - "pause.wav" - https://www.freesound.org/people/crisstanza/sounds/167127/
+//              - "unpause.wav" - https://www.freesound.org/people/crisstanza/sounds/167126/
+//              - "game_over.wav" - https://www.freesound.org/people/notchfilter/sounds/43698/
+//              - "game_won.wav" - https://www.freesound.org/people/jobro/sounds/60445/
+//
 // TO-DO (maybe): Mouse cursor clipped/grabbed/captured to the window.
 // TO-DO (maybe): Change to fixed timestep, tie game logic to game time elapsed, not framerate.
 //
@@ -282,6 +293,9 @@ namespace spin_pong
         private PolygonDef ballPoly;
         private Sprite ballSprite;
         private Random random;
+        private Sound ballHitsPlayer;
+        private Sound ballHitsEnemy;
+        private Sound ballHitsGoal;
         public Body Body { get { return this.ballBody; } }
         public Sprite Sprite { get { return this.ballSprite; } }
         private const int HalfWidth = 12;
@@ -327,6 +341,16 @@ namespace spin_pong
             // Finalize the shape and body.
             this.ballBody.CreateShape(ballPoly);
             this.ballBody.SetMassFromShapes();
+
+            // Set sound buffer from filename.
+            SoundBuffer ballHitsPlayerBuffer = new SoundBuffer("ball_hits_player.wav");
+            SoundBuffer ballHitsEnemyBuffer = new SoundBuffer("ball_hits_enemy.wav");
+            SoundBuffer ballHitsGoalBuffer = new SoundBuffer("scoring_point.wav");
+
+            // Create sound based on sound buffer.
+            this.ballHitsPlayer = new Sound(ballHitsPlayerBuffer);
+            this.ballHitsEnemy = new Sound(ballHitsEnemyBuffer);
+            this.ballHitsGoal = new Sound(ballHitsGoalBuffer);
 
             this.random = new Random();
             RandomizeBallDirection();
@@ -381,6 +405,7 @@ namespace spin_pong
 
             if (this.collisionWithPaddleSidePlayer)
             {
+                this.ballHitsPlayer.Play();
                 ballVelocity.X *= -1;
 
                 // Player moving up.
@@ -424,12 +449,14 @@ namespace spin_pong
 
             if (this.collisionWithPaddleSideEnemy)
             {
+                this.ballHitsEnemy.Play();
                 ballVelocity.X *= -1;
                 this.collisionWithPaddleSideEnemy = false;
             }
 
             if (this.collisionWithPaddleTop)
             {
+                this.ballHitsEnemy.Play();
                 if (ballVelocity.Y > 0)
                 {
                     ballVelocity.Y *= -1;
@@ -440,6 +467,7 @@ namespace spin_pong
 
             if (this.collisionWithPaddleBottom)
             {
+                this.ballHitsPlayer.Play();
                 if (ballVelocity.Y < 0)
                 {
                     ballVelocity.Y *= -1;
@@ -451,10 +479,13 @@ namespace spin_pong
             // Enemy gets a score.
             if (this.collisionWithPlayerGoal)
             {
-                this.Body.SetXForm(new Vec2(player.Body.GetPosition().X + (25 / PixelsToMeter), player.Body.GetPosition().Y), 0);
-                ballVelocity.Y = 0;
-                ballVelocity.X = 0;
                 enemy.score++;
+
+                if (enemy.score != 3)
+                {
+                    this.ballHitsGoal.Play();
+                }
+
                 this.collisionWithPlayerGoal = false;
                 this.playerStart = true;
             }
@@ -462,10 +493,16 @@ namespace spin_pong
             // Player gets a score.
             if (this.collisionWithEnemyGoal)
             {
-                this.Body.SetXForm(new Vec2(enemy.Body.GetPosition().X - (24 / PixelsToMeter), enemy.Body.GetPosition().Y), 0);
+                player.score++;
+
+                if (player.score != 3)
+                {
+                    this.ballHitsGoal.Play();
+                }
+
+                this.Body.SetXForm(new Vec2(enemy.Body.GetPosition().X - (25 / PixelsToMeter), enemy.Body.GetPosition().Y), 0);
                 ballVelocity.Y = 0;
                 ballVelocity.X = 0;
-                player.score++;
                 this.collisionWithEnemyGoal = false;
                 this.enemyStart = true;
             }
@@ -473,13 +510,14 @@ namespace spin_pong
             // After ball collides with player goal.
             if (this.playerStart)
             {
-                this.Body.SetXForm(new Vec2((player.Body.GetPosition().X + 24 / PixelsToMeter), player.Body.GetPosition().Y), 0);
+                this.Body.SetXForm(new Vec2((player.Body.GetPosition().X + 25 / PixelsToMeter), player.Body.GetPosition().Y), 0);
                 ballVelocity.X = 0;
                 spinCounter = 0;
 
                 // Player launches ball.
                 if (this.playerLaunch)
                 {
+                    this.ballHitsPlayer.Play();
 
                     // Choose ball direction based on player velocity.
                     if (player.Body.GetLinearVelocity().Y < 0)
@@ -530,6 +568,7 @@ namespace spin_pong
 
                     if (enemyStartElapsed >= 1.2f)
                     {
+                        this.ballHitsEnemy.Play();
                         this.enemyStart = false;
                         ballVelocity.Y = -6;
                         ballVelocity.X = -6;
@@ -542,6 +581,7 @@ namespace spin_pong
 
                     if (enemyStartElapsed >= 1.2f)
                     {
+                        this.ballHitsEnemy.Play();
                         this.enemyStart = false;
                         ballVelocity.Y = 6;
                         ballVelocity.X = -6;
@@ -1071,6 +1111,12 @@ namespace spin_pong
         private Text spinCounterText;
         private Text ballSpeedText;
         private Text gamePausedText;
+        private Text gamePausedContinueText;
+        private Sound menuClickBack;
+        private Sound pause;
+        private Sound unpause;
+        private Sound gameOver;
+        private Sound gameWon;
         private Player player;
         private Enemy enemy;
         private Ball ball;
@@ -1139,6 +1185,20 @@ namespace spin_pong
             // Set font.
             this.arial = new Font("arial.ttf");
 
+            // Set sound buffer from filename.
+            SoundBuffer menuClickBackBuffer = new SoundBuffer("menu_click_back.wav");
+            SoundBuffer pauseBuffer = new SoundBuffer("pause.wav");
+            SoundBuffer unpauseBuffer = new SoundBuffer("unpause.wav");
+            SoundBuffer gameOverBuffer = new SoundBuffer("game_over.wav");
+            SoundBuffer gameWonBuffer = new SoundBuffer("game_won.wav");
+
+            // Create sound based on sound buffer.
+            this.menuClickBack = new Sound(menuClickBackBuffer);
+            this.pause = new Sound(pauseBuffer);
+            this.unpause = new Sound(unpauseBuffer);
+            this.gameOver = new Sound(gameOverBuffer);
+            this.gameWon = new Sound(gameWonBuffer);
+
             // Create mid-line.
             Texture texture = new Texture("midline_10x1024.png");
             this.midlineSprite = new Sprite(texture);
@@ -1149,10 +1209,18 @@ namespace spin_pong
             this.gamePausedText.CharacterSize = 120;
             this.gamePausedText.Color = new Color(255, 255, 255);
 
+            this.gamePausedContinueText = new Text("Press 'SPACE' to continue", arial);
+            this.gamePausedContinueText.CharacterSize = 50;
+            this.gamePausedContinueText.Color = new Color(255, 255, 255);
+
             // Center text.
             FloatRect pauseTextRect = gamePausedText.GetLocalBounds();
             this.gamePausedText.Origin = new Vector2f(pauseTextRect.Left + pauseTextRect.Width / 2, pauseTextRect.Top + pauseTextRect.Height / 2);
-            this.gamePausedText.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 2);
+            this.gamePausedText.Position = new Vector2f(window.Size.X / 2, 350);
+
+            FloatRect pauseContinueTextRect = gamePausedContinueText.GetLocalBounds();
+            this.gamePausedContinueText.Origin = new Vector2f(pauseContinueTextRect.Left + pauseContinueTextRect.Width / 2, pauseContinueTextRect.Top + pauseContinueTextRect.Height / 2);
+            this.gamePausedContinueText.Position = new Vector2f(window.Size.X / 2, 480);
 
             window.SetMouseCursorVisible(false);
 
@@ -1165,6 +1233,7 @@ namespace spin_pong
 
         public override void BindEvents(RenderWindow window)
         {
+            window.LostFocus += new EventHandler(OnWindowLostFocus);
             window.Closed += new EventHandler(OnWindowClose);
             window.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPress);
             window.MouseButtonPressed += new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
@@ -1173,10 +1242,18 @@ namespace spin_pong
 
         public override void UnbindEvents(RenderWindow window)
         {
+            window.LostFocus -= new EventHandler(OnWindowLostFocus);
             window.Closed -= new EventHandler(OnWindowClose);
             window.KeyPressed -= new EventHandler<KeyEventArgs>(OnKeyPress);
             window.MouseButtonPressed -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonPress);
             window.MouseButtonReleased -= new EventHandler<MouseButtonEventArgs>(OnMouseButtonRelease);
+        }
+
+        public void OnWindowLostFocus(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            this.gamePaused = true;
         }
 
         public void OnWindowClose(object sender, EventArgs e)
@@ -1212,12 +1289,14 @@ namespace spin_pong
 
             if (e.Code == Keyboard.Key.Escape)
             {
+                this.menuClickBack.Play();
                 gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
             }
             else if (e.Code == Keyboard.Key.Space)
             {
                 if (gamePaused == true)
                 {
+                    this.unpause.Play();
                     gamePaused = false;
 
                     // When unpaused, set mouse position to player body position.
@@ -1227,6 +1306,7 @@ namespace spin_pong
                 }
                 else
                 {
+                    this.pause.Play();
                     gamePaused = true;
                 }
             }
@@ -1237,11 +1317,13 @@ namespace spin_pong
             // Player wins
             if (this.player.score == 3)
             {
+                this.gameWon.Play();
                 gameStateManager.ChangeState(window, new WinState(gameStateManager));
             }
-            // Enemy wins
+            // Player loses
             if (this.enemy.score == 3)
             {
+                this.gameOver.Play();
                 gameStateManager.ChangeState(window, new LoseState(gameStateManager));
             }
 
@@ -1326,6 +1408,7 @@ namespace spin_pong
             if (gamePaused)
             {
                 window.Draw(this.gamePausedText);
+                window.Draw(this.gamePausedContinueText);
             }
         }
     }
@@ -1337,6 +1420,7 @@ namespace spin_pong
         private Text titleText;
         private Text playText;
         private Text quitText;
+        private Sound menuClickForward;
         private GameStateManager gameStateManager;
         public bool mouseOnPlayButton;
         public bool mouseOnQuitButton;
@@ -1350,6 +1434,12 @@ namespace spin_pong
         {
             // Set font.
             this.arial = new Font("arial.ttf");
+
+            // Set sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+
+            // Create sound based on sound buffer.
+            this.menuClickForward = new Sound(menuClickForwardBuffer);
 
             // Create menu buttons.
             this.titleText = new Text("Spin Pong", arial);
@@ -1435,6 +1525,7 @@ namespace spin_pong
                 // Hit tests.
                 if (playTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
                 }
                 if (quitTextBounds.Contains(mouse.X, mouse.Y))
@@ -1508,6 +1599,8 @@ namespace spin_pong
         private Text hardText;
         private Text impossibleText;
         private Text backText;
+        private Sound menuClickForward;
+        private Sound menuClickBack;
         private GameStateManager gameStateManager;
         public bool mouseOnEasyButton;
         public bool mouseOnMediumButton;
@@ -1524,6 +1617,14 @@ namespace spin_pong
         {
             // Set font.
             this.arial = new Font("arial.ttf");
+
+            // Set sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+            SoundBuffer menuClickBackBuffer = new SoundBuffer("menu_click_back.wav");
+
+            // Create sound based on sound buffer.
+            this.menuClickForward = new Sound(menuClickForwardBuffer);
+            this.menuClickBack = new Sound(menuClickBackBuffer);
 
             // Create menu buttons.
             this.titleText = new Text("Choose difficulty:", arial);
@@ -1602,6 +1703,7 @@ namespace spin_pong
 
             if (e.Code == Keyboard.Key.Escape)
             {
+                this.menuClickBack.Play();
                 gameStateManager.ChangeState(window, new MenuState(gameStateManager));
             }
 
@@ -1625,22 +1727,27 @@ namespace spin_pong
                 // Hit tests.
                 if (easyTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Easy"));
                 }
                 if (mediumTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Medium"));
                 }
                 if (hardTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Hard"));
                 }
                 if (impossibleTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new PlayState(gameStateManager, "Impossible"));
                 }
                 if (backTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickBack.Play();
                     gameStateManager.ChangeState(window, new MenuState(gameStateManager));
                 }
             }
@@ -1769,6 +1876,7 @@ namespace spin_pong
         private Text titleText;
         private Text playText;
         private Text quitText;
+        private Sound menuClickForward;
         private GameStateManager gameStateManager;
         public bool mouseOnPlayButton;
         public bool mouseOnQuitButton;
@@ -1782,6 +1890,12 @@ namespace spin_pong
         {
             // Set font.
             this.arial = new Font("arial.ttf");
+
+            // Set sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+
+            // Create sound based on sound buffer.
+            this.menuClickForward = new Sound(menuClickForwardBuffer);
 
             // Create menu buttons.
             this.titleText = new Text("You win. Congratulations!", arial);
@@ -1859,6 +1973,7 @@ namespace spin_pong
                 // Hit tests.
                 if (playTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
                 }
                 if (quitTextBounds.Contains(mouse.X, mouse.Y))
@@ -1929,6 +2044,7 @@ namespace spin_pong
         private Text titleText;
         private Text playText;
         private Text quitText;
+        private Sound menuClickForward;
         private GameStateManager gameStateManager;
         public bool mouseOnPlayButton;
         public bool mouseOnQuitButton;
@@ -1942,6 +2058,12 @@ namespace spin_pong
         {
             // Set font.
             this.arial = new Font("arial.ttf");
+
+            // Set sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+
+            // Create sound based on sound buffer.
+            this.menuClickForward = new Sound(menuClickForwardBuffer);
 
             // Create menu buttons.
             this.titleText = new Text("You lose. Try again?", arial);
@@ -2019,6 +2141,7 @@ namespace spin_pong
                 // Hit tests.
                 if (playTextBounds.Contains(mouse.X, mouse.Y))
                 {
+                    this.menuClickForward.Play();
                     gameStateManager.ChangeState(window, new DifficultyState(gameStateManager));
                 }
                 if (quitTextBounds.Contains(mouse.X, mouse.Y))
