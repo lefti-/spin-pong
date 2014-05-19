@@ -5,17 +5,50 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "spin-pong", "spin-pong\spin-pong.csproj", "{EA497BB5-9824-44DF-A028-FBFCDF3C56E2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extlibs", "extlibs", "{5F99EF66-876D-4FDA-AC8F-E884FF46B76B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{B8FBF358-62C5-4DF5-86B7-BE1A2FE25680}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fonts", "fonts", "{8D38779D-55DD-4187-AF5B-8EF80834A301}"
 	ProjectSection(SolutionItems) = preProject
+		assets\fonts\centurygothic.ttf = assets\fonts\centurygothic.ttf
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{BFA93FFD-E8B7-4AFF-9FE2-51285A091373}"
+	ProjectSection(SolutionItems) = preProject
+		assets\images\ball_24x24.png = assets\images\ball_24x24.png
+		assets\images\border_1024x32.png = assets\images\border_1024x32.png
+		assets\images\goal_6x1024.png = assets\images\goal_6x1024.png
+		assets\images\midline_10x1024.png = assets\images\midline_10x1024.png
+		assets\images\paddle_24x128.png = assets\images\paddle_24x128.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sounds", "sounds", "{8CD33E3E-E94B-478B-971D-9E5D80EEA79F}"
+	ProjectSection(SolutionItems) = preProject
+		assets\sounds\ball_hits_enemy.wav = assets\sounds\ball_hits_enemy.wav
+		assets\sounds\ball_hits_player.wav = assets\sounds\ball_hits_player.wav
+		assets\sounds\ballhitspaddle.wav = assets\sounds\ballhitspaddle.wav
+		assets\sounds\game_over.wav = assets\sounds\game_over.wav
+		assets\sounds\game_won.wav = assets\sounds\game_won.wav
+		assets\sounds\menu_click_back.wav = assets\sounds\menu_click_back.wav
+		assets\sounds\menu_click_forward.wav = assets\sounds\menu_click_forward.wav
+		assets\sounds\pause.wav = assets\sounds\pause.wav
+		assets\sounds\scoring_point.wav = assets\sounds\scoring_point.wav
+		assets\sounds\unpause.mp3 = assets\sounds\unpause.mp3
+		assets\sounds\unpause.wav = assets\sounds\unpause.wav
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{7B8F94D6-5015-4695-93E0-90EAF054EC50}"
+	ProjectSection(SolutionItems) = preProject
+		libs\Box2DX.dll = libs\Box2DX.dll
 		libs\csfml-audio-2.dll = libs\csfml-audio-2.dll
 		libs\csfml-graphics-2.dll = libs\csfml-graphics-2.dll
 		libs\csfml-window-2.dll = libs\csfml-window-2.dll
-		libs\libsndfile-1.dll = libs\libsndfile-1.dll
-		libs\NetEXT.dll = libs\NetEXT.dll
-		libs\openal32.dll = libs\openal32.dll
+		..\extlibs\libsndfile-1.dll = ..\extlibs\libsndfile-1.dll
+		..\extlibs\NetEXT.dll = ..\extlibs\NetEXT.dll
+		..\extlibs\openal32.dll = ..\extlibs\openal32.dll
+		..\extlibs\sfmlnet-audio-2.dll = ..\extlibs\sfmlnet-audio-2.dll
+		..\extlibs\sfmlnet-graphics-2.dll = ..\extlibs\sfmlnet-graphics-2.dll
+		..\extlibs\sfmlnet-window-2.dll = ..\extlibs\sfmlnet-window-2.dll
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{1DADFB93-3100-410D-9480-0A72AC817B3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +69,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8D38779D-55DD-4187-AF5B-8EF80834A301} = {B8FBF358-62C5-4DF5-86B7-BE1A2FE25680}
+		{BFA93FFD-E8B7-4AFF-9FE2-51285A091373} = {B8FBF358-62C5-4DF5-86B7-BE1A2FE25680}
+		{8CD33E3E-E94B-478B-971D-9E5D80EEA79F} = {B8FBF358-62C5-4DF5-86B7-BE1A2FE25680}
 	EndGlobalSection
 EndGlobal

@@ -66,21 +66,25 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Box2DX">
-      <HintPath>..\..\..\..\..\..\..\code\Box2DX\Box2DX.dll</HintPath>
+    <Reference Include="Box2DX, Version=2.0.1.28279, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Box2DX.dll</HintPath>
     </Reference>
     <Reference Include="NetEXT, Version=1.8.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\NetEXT.dll</HintPath>
+      <HintPath>..\libs\NetEXT.dll</HintPath>
     </Reference>
-    <Reference Include="sfmlnet-audio-2">
-      <HintPath>..\..\..\..\..\..\..\code\SFML.Net-2.1\lib\sfmlnet-audio-2.dll</HintPath>
+    <Reference Include="sfmlnet-audio-2, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\sfmlnet-audio-2.dll</HintPath>
     </Reference>
-    <Reference Include="sfmlnet-graphics-2">
-      <HintPath>..\..\..\..\..\..\..\code\SFML.Net-2.1\lib\sfmlnet-graphics-2.dll</HintPath>
+    <Reference Include="sfmlnet-graphics-2, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\sfmlnet-graphics-2.dll</HintPath>
     </Reference>
-    <Reference Include="sfmlnet-window-2">
-      <HintPath>..\..\..\..\..\..\..\code\SFML.Net-2.1\lib\sfmlnet-window-2.dll</HintPath>
+    <Reference Include="sfmlnet-window-2, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\sfmlnet-window-2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -108,26 +112,6 @@
     <Compile Include="SpinPong.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\libs\csfml-audio-2.dll">
-      <Link>csfml-audio-2.dll</Link>
-    </Content>
-    <Content Include="..\libs\csfml-graphics-2.dll">
-      <Link>csfml-graphics-2.dll</Link>
-    </Content>
-    <Content Include="..\libs\csfml-window-2.dll">
-      <Link>csfml-window-2.dll</Link>
-    </Content>
-    <Content Include="..\libs\libsndfile-1.dll">
-      <Link>libsndfile-1.dll</Link>
-    </Content>
-    <Content Include="..\libs\NetEXT.dll">
-      <Link>NetEXT.dll</Link>
-    </Content>
-    <Content Include="..\libs\openal32.dll">
-      <Link>openal32.dll</Link>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
@@ -144,7 +128,28 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="..\libs\csfml-audio-2.dll">
+      <Link>csfml-audio-2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\libs\csfml-graphics-2.dll">
+      <Link>csfml-graphics-2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\libs\csfml-window-2.dll">
+      <Link>csfml-window-2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\libs\libsndfile-1.dll">
+      <Link>libsndfile-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\libs\openal32.dll">
+      <Link>openal32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
