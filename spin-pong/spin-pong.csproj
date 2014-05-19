@@ -101,34 +101,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="assets\fonts\arial.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\images\ball_24x24.png" />
-    <Content Include="assets\images\border_1024x32.png" />
-    <Content Include="assets\images\goal_6x1024.png" />
-    <Content Include="assets\images\midline_10x1024.png" />
-    <Content Include="assets\images\paddle_24x128.png" />
-    <Content Include="assets\sounds\ballhitspaddle.wav" />
-    <Content Include="assets\sounds\ball_hits_enemy.wav" />
-    <Content Include="assets\sounds\ball_hits_player.wav" />
-    <Content Include="assets\sounds\game_over.wav" />
-    <Content Include="assets\sounds\game_won.wav" />
-    <Content Include="assets\sounds\menu_click_back.wav" />
-    <Content Include="assets\sounds\menu_click_forward.wav" />
-    <Content Include="assets\sounds\pause.wav" />
-    <Content Include="assets\sounds\scoring_point.wav" />
-    <Content Include="assets\sounds\unpause.mp3" />
-    <Content Include="assets\sounds\unpause.wav" />
-    <Content Include="csfml-audio-2.dll" />
-    <Content Include="csfml-graphics-2.dll" />
-    <Content Include="csfml-window-2.dll" />
-    <Content Include="extlibs\sfmlnet-audio-2.dll" />
-    <Content Include="extlibs\sfmlnet-graphics-2.dll" />
-    <Content Include="extlibs\sfmlnet-window-2.dll" />
-    <Content Include="libsndfile-1.dll" />
-    <Content Include="NetEXT.dll" />
-    <Content Include="openal32.dll" />
+    <Content Include="..\libs\csfml-audio-2.dll">
+      <Link>csfml-audio-2.dll</Link>
+    </Content>
+    <Content Include="..\libs\csfml-graphics-2.dll">
+      <Link>csfml-graphics-2.dll</Link>
+    </Content>
+    <Content Include="..\libs\csfml-window-2.dll">
+      <Link>csfml-window-2.dll</Link>
+    </Content>
+    <Content Include="..\libs\libsndfile-1.dll">
+      <Link>libsndfile-1.dll</Link>
+    </Content>
+    <Content Include="..\libs\NetEXT.dll">
+      <Link>NetEXT.dll</Link>
+    </Content>
+    <Content Include="..\libs\openal32.dll">
+      <Link>openal32.dll</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -146,9 +138,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
