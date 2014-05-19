@@ -1,24 +1,17 @@
 ﻿/*
     Spin Pong
     This software uses The MIT License (MIT). See license agreement LICENSE for full details.
-
-    YOUR GOAL:
-        - Apply spin to the ball. After certain amount of spin, your chances of scoring are MUCH higher.
-        - To apply spin: when hitting the ball, move paddle to the same direction where the ball moves.
-        - Score 3 points to win.
-        - Be quick, the ball becomes faster and faster as time passes!
-
-    FRAMEWORKS/LIBRARIES USED:
-        - SFML is used for windowing, handling events and input, rendering graphics and audio.
-        - Box2D is used for collision detection.
-        - NetEXT is used for more accurate time-related functions.
 */
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // CHECKLIST
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//  SOUND ATTRIBUTIONS:
+// TO-DO: Find a better font.
+// TO-DO: Create README.
+// TO-DO: Organize SpinPong.cs to different .cs files.
+//
+// SOUND ATTRIBUTIONS:
 //              - "menu_click_forward.wav" - https://www.freesound.org/people/NenadSimic/sounds/171697/
 //              - "menu_click_back.wav" - https://www.freesound.org/people/Callum_Sharp279/sounds/198778/
 //              - "ballhitspaddle.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
@@ -332,7 +325,7 @@ namespace spin_pong
             this.ballPoly.Density = 1.0f;
 
             // Create a texture from filename.
-            Texture texture = new Texture("ball2_24x24.png");
+            Texture texture = new Texture("assets/images/ball_24x24.png");
 
             // Create a sprite based on texture.
             this.ballSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
@@ -342,10 +335,10 @@ namespace spin_pong
             this.ballBody.CreateShape(ballPoly);
             this.ballBody.SetMassFromShapes();
 
-            // Set sound buffer from filename.
-            SoundBuffer ballHitsPlayerBuffer = new SoundBuffer("ball_hits_player.wav");
-            SoundBuffer ballHitsEnemyBuffer = new SoundBuffer("ball_hits_enemy.wav");
-            SoundBuffer ballHitsGoalBuffer = new SoundBuffer("scoring_point.wav");
+            // Create sound buffer from filename.
+            SoundBuffer ballHitsPlayerBuffer = new SoundBuffer("assets/sounds/ball_hits_player.wav");
+            SoundBuffer ballHitsEnemyBuffer = new SoundBuffer("assets/sounds/ball_hits_enemy.wav");
+            SoundBuffer ballHitsGoalBuffer = new SoundBuffer("assets/sounds/scoring_point.wav");
 
             // Create sound based on sound buffer.
             this.ballHitsPlayer = new Sound(ballHitsPlayerBuffer);
@@ -664,7 +657,7 @@ namespace spin_pong
             this.bottomShape.SetAsBox(HalfWidth / PixelsToMeter, 2f / PixelsToMeter, new Vec2(-12 / PixelsToMeter, HalfHeight / PixelsToMeter), 0);
 
             // Create a texture from filename.
-            Texture texture = new Texture("paddle2_24x128.png");
+            Texture texture = new Texture("assets/images/paddle_24x128.png");
 
             // Create a sprite based on texture.
             this.playerSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
@@ -787,7 +780,7 @@ namespace spin_pong
             this.bottomShape.UserData = "bottom";
 
             // Create a texture from filename.
-            Texture texture = new Texture("paddle2_24x128.png");
+            Texture texture = new Texture("assets/images/paddle_24x128.png");
 
             // Create a sprite based on texture.
             this.enemySprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
@@ -964,7 +957,7 @@ namespace spin_pong
             this.wallPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
 
             // Create a texture from filename.
-            Texture texture = new Texture("border2_1024x32.png");
+            Texture texture = new Texture("assets/images/border_1024x32.png");
 
             // Create a sprite based on texture.
             this.wallSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
@@ -1013,7 +1006,7 @@ namespace spin_pong
             this.goalPoly.SetAsBox(HalfWidth / PixelsToMeter, HalfHeight / PixelsToMeter);
 
             // Create a texture from filename.
-            Texture texture = new Texture("goal_6x1024.png");
+            Texture texture = new Texture("assets/images/goal_6x1024.png");
 
             // Create a sprite based on texture.
             this.goalSprite = new Sprite(texture) { Origin = new Vector2f(HalfWidth, HalfHeight) };
@@ -1183,14 +1176,14 @@ namespace spin_pong
             this.enemyGoal = new Goal(this.world, window.Size.X - 3, (window.Size.Y / 2));
 
             // Set font.
-            this.arial = new Font("arial.ttf");
+            this.arial = new Font("assets/fonts/arial.ttf");
 
-            // Set sound buffer from filename.
-            SoundBuffer menuClickBackBuffer = new SoundBuffer("menu_click_back.wav");
-            SoundBuffer pauseBuffer = new SoundBuffer("pause.wav");
-            SoundBuffer unpauseBuffer = new SoundBuffer("unpause.wav");
-            SoundBuffer gameOverBuffer = new SoundBuffer("game_over.wav");
-            SoundBuffer gameWonBuffer = new SoundBuffer("game_won.wav");
+            // Create sound buffer from filename.
+            SoundBuffer menuClickBackBuffer = new SoundBuffer("assets/sounds/menu_click_back.wav");
+            SoundBuffer pauseBuffer = new SoundBuffer("assets/sounds/pause.wav");
+            SoundBuffer unpauseBuffer = new SoundBuffer("assets/sounds/unpause.wav");
+            SoundBuffer gameOverBuffer = new SoundBuffer("assets/sounds/game_over.wav");
+            SoundBuffer gameWonBuffer = new SoundBuffer("assets/sounds/game_won.wav");
 
             // Create sound based on sound buffer.
             this.menuClickBack = new Sound(menuClickBackBuffer);
@@ -1200,7 +1193,7 @@ namespace spin_pong
             this.gameWon = new Sound(gameWonBuffer);
 
             // Create mid-line.
-            Texture texture = new Texture("midline_10x1024.png");
+            Texture texture = new Texture("assets/images/midline_10x1024.png");
             this.midlineSprite = new Sprite(texture);
             this.midlineSprite.Position = new Vector2f(((window.Size.X / 2) - 5), 0);
 
@@ -1355,13 +1348,13 @@ namespace spin_pong
             this.playerScoreText = new Text(playerScoreFormat, arial);
             this.playerScoreText.Position = new Vector2f(((window.Size.X / 2) - 100), 60);
             this.playerScoreText.CharacterSize = 80;
-            this.playerScoreText.Color = new Color(0, 38, 255);
+            this.playerScoreText.Color = new Color(0, 70, 255);
 
             string enemyScoreFormat = string.Format("{0}", this.enemy.score);
             this.enemyScoreText = new Text(enemyScoreFormat, arial);
             this.enemyScoreText.Position = new Vector2f(((window.Size.X / 2) + 50), 60);
             this.enemyScoreText.CharacterSize = 80;
-            this.enemyScoreText.Color = new Color(0, 38, 255);
+            this.enemyScoreText.Color = new Color(0, 70, 255);
 
             string spinCounterFormat = string.Format("spin: {0}", this.ball.spinCounter);
             this.spinCounterText = new Text(spinCounterFormat, arial);
@@ -1433,10 +1426,10 @@ namespace spin_pong
         public override void Initialize(RenderWindow window)
         {
             // Set font.
-            this.arial = new Font("arial.ttf");
+            this.arial = new Font("assets/fonts/arial.ttf");
 
-            // Set sound buffer from filename.
-            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+            // Create sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("assets/sounds/menu_click_forward.wav");
 
             // Create sound based on sound buffer.
             this.menuClickForward = new Sound(menuClickForwardBuffer);
@@ -1616,11 +1609,11 @@ namespace spin_pong
         public override void Initialize(RenderWindow window)
         {
             // Set font.
-            this.arial = new Font("arial.ttf");
+            this.arial = new Font("assets/fonts/arial.ttf");
 
-            // Set sound buffer from filename.
-            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
-            SoundBuffer menuClickBackBuffer = new SoundBuffer("menu_click_back.wav");
+            // Create sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("assets/sounds/menu_click_forward.wav");
+            SoundBuffer menuClickBackBuffer = new SoundBuffer("assets/sounds/menu_click_back.wav");
 
             // Create sound based on sound buffer.
             this.menuClickForward = new Sound(menuClickForwardBuffer);
@@ -1889,10 +1882,10 @@ namespace spin_pong
         public override void Initialize(RenderWindow window)
         {
             // Set font.
-            this.arial = new Font("arial.ttf");
+            this.arial = new Font("assets/fonts/arial.ttf");
 
-            // Set sound buffer from filename.
-            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+            // Create sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("assets/sounds/menu_click_forward.wav");
 
             // Create sound based on sound buffer.
             this.menuClickForward = new Sound(menuClickForwardBuffer);
@@ -2057,10 +2050,10 @@ namespace spin_pong
         public override void Initialize(RenderWindow window)
         {
             // Set font.
-            this.arial = new Font("arial.ttf");
+            this.arial = new Font("assets/fonts/arial.ttf");
 
-            // Set sound buffer from filename.
-            SoundBuffer menuClickForwardBuffer = new SoundBuffer("menu_click_forward.wav");
+            // Create sound buffer from filename.
+            SoundBuffer menuClickForwardBuffer = new SoundBuffer("assets/sounds/menu_click_forward.wav");
 
             // Create sound based on sound buffer.
             this.menuClickForward = new Sound(menuClickForwardBuffer);

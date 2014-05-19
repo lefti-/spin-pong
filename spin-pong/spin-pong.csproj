@@ -82,8 +82,25 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="assets\fonts\arial.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\images\ball_24x24.png" />
+    <Content Include="assets\images\border_1024x32.png" />
+    <Content Include="assets\images\goal_6x1024.png" />
+    <Content Include="assets\images\midline_10x1024.png" />
+    <Content Include="assets\images\paddle_24x128.png" />
+    <Content Include="assets\sounds\ballhitspaddle.wav" />
+    <Content Include="assets\sounds\ball_hits_enemy.wav" />
+    <Content Include="assets\sounds\ball_hits_player.wav" />
+    <Content Include="assets\sounds\game_over.wav" />
+    <Content Include="assets\sounds\game_won.wav" />
+    <Content Include="assets\sounds\menu_click_back.wav" />
+    <Content Include="assets\sounds\menu_click_forward.wav" />
+    <Content Include="assets\sounds\pause.wav" />
+    <Content Include="assets\sounds\scoring_point.wav" />
+    <Content Include="assets\sounds\unpause.mp3" />
+    <Content Include="assets\sounds\unpause.wav" />
     <Content Include="csfml-audio-2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
