@@ -95,11 +95,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="GameStateManager.cs" />
     <Compile Include="MyContactListener.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SpinPong.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\libs\csfml-audio-2.dll">
