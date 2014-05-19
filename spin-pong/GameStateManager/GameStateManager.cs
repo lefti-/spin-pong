@@ -3,27 +3,19 @@
     This software uses The MIT License (MIT). See license agreement LICENSE for full details.
 */
 
+using GameStates;
+using SFML.Graphics;
 using System;
 using System.Collections.Generic;
-using SFML;
-using SFML.Audio;
-using SFML.Graphics;
-using SFML.Window;
-using Color = SFML.Graphics.Color;
-using NetEXT.TimeFunctions;
-using Box2DX.Collision;
-using Box2DX.Common;
-using Box2DX.Dynamics;
-using Shape = Box2DX.Collision.Shape;
 
-namespace spin_pong
+namespace GameStateManager
 {
-    class GameStateManager
+    class StateManager
     {
         List<GameState> gameStates = new List<GameState>();
         private int currentState;
 
-        public GameStateManager(RenderWindow window)
+        public StateManager(RenderWindow window)
         {
             gameStates = new List<GameState>();
 

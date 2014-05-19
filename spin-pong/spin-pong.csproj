@@ -91,10 +91,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entity.cs" />
-    <Compile Include="GameState.cs" />
-    <Compile Include="GameStateManager.cs" />
-    <Compile Include="MyContactListener.cs" />
+    <Compile Include="Entities\Ball.cs" />
+    <Compile Include="Entities\Enemy.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Goal.cs" />
+    <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\Wall.cs" />
+    <Compile Include="GameStates\DifficultyState.cs" />
+    <Compile Include="GameStates\LoseState.cs" />
+    <Compile Include="GameStates\MenuState.cs" />
+    <Compile Include="GameStates\GameState.cs" />
+    <Compile Include="GameStateManager\GameStateManager.cs" />
+    <Compile Include="GameStates\PlayState.cs" />
+    <Compile Include="GameStates\WinState.cs" />
+    <Compile Include="CollisionListener\MyCollisionListener.cs" />
     <Compile Include="SpinPong.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +144,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

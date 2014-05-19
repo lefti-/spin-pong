@@ -26,19 +26,9 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using SFML;
-using SFML.Audio;
+using GameStateManager;
 using SFML.Graphics;
 using SFML.Window;
-using Color = SFML.Graphics.Color;
-using NetEXT.TimeFunctions;
-using Box2DX.Collision;
-using Box2DX.Common;
-using Box2DX.Dynamics;
-using Shape = Box2DX.Collision.Shape;
-
 
 namespace spin_pong
 {
@@ -58,7 +48,7 @@ namespace spin_pong
             //window.SetVerticalSyncEnabled(true);
 
             // Create a manager for game states.
-            GameStateManager gameStateManager = new GameStateManager(window);
+            StateManager gameStateManager = new StateManager(window);
             
             // Main loop.
             while (window.IsOpen())

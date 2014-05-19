@@ -3,23 +3,15 @@
     This software uses The MIT License (MIT). See license agreement LICENSE for full details.
 */
 
-using System;
-using System.Collections.Generic;
-using SFML;
-using SFML.Audio;
-using SFML.Graphics;
-using SFML.Window;
-using Color = SFML.Graphics.Color;
-using NetEXT.TimeFunctions;
-using Box2DX.Collision;
 using Box2DX.Common;
 using Box2DX.Dynamics;
-using Shape = Box2DX.Collision.Shape;
+using Entities;
+using System;
 
-namespace spin_pong
+namespace MyCollisionListener
 {
     // Box2D's ContactListener is implemented for collision detection.
-    class MyContactListener : ContactListener
+    class CollisionListener : ContactListener
     {
         public override void Add(ContactPoint point)
         {
