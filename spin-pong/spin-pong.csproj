@@ -101,7 +101,7 @@
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\LoseState.cs" />
     <Compile Include="GameStates\MenuState.cs" />
-    <Compile Include="GameStateManager\GameStateManager.cs" />
+    <Compile Include="GameStateManager\StateManager.cs" />
     <Compile Include="GameStates\PlayState.cs" />
     <Compile Include="GameStates\WinState.cs" />
     <Compile Include="CollisionListener\MyCollisionListener.cs" />

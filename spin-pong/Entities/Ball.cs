@@ -1,6 +1,6 @@
 ﻿/*
     Spin Pong
-    This software uses The MIT License (MIT). See license agreement LICENSE for full details.
+    This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
 */
 
 using Box2DX.Collision;

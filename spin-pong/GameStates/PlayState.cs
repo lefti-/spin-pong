@@ -1,6 +1,6 @@
 ﻿/*
     Spin Pong
-    This software uses The MIT License (MIT). See license agreement LICENSE for full details.
+    This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
 */
 
 using Box2DX.Collision;
@@ -99,7 +99,7 @@ namespace GameStates
             this.enemyGoal = new Goal(this.world, window.Size.X - 3, (window.Size.Y / 2));
 
             // Set font.
-            this.arial = new Font("assets/fonts/arial.ttf");
+            this.arial = new Font("assets/fonts/centurygothic.ttf");
 
             // Create sound buffer from filename.
             SoundBuffer menuClickBackBuffer = new SoundBuffer("assets/sounds/menu_click_back.wav");
@@ -283,7 +283,6 @@ namespace GameStates
             this.spinCounterText = new Text(spinCounterFormat, arial);
             this.spinCounterText.Position = new Vector2f(120, window.Size.Y / 2 - 50);
             this.spinCounterText.CharacterSize = 40;
-            this.spinCounterText.Style = Text.Styles.Italic;
             this.spinCounterText.Color = new Color(110, 86, 0);
 
             // Display ball speed always as positive float.
@@ -300,7 +299,6 @@ namespace GameStates
             this.ballSpeedText = new Text(ballSpeedFormat, arial);
             this.ballSpeedText.Position = new Vector2f(160, window.Size.Y / 2);
             this.ballSpeedText.CharacterSize = 20;
-            this.ballSpeedText.Style = Text.Styles.Italic;
             this.ballSpeedText.Color = new Color(110, 86, 0);
 
             window.Draw(this.playerScoreText);

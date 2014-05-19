@@ -1,6 +1,6 @@
 ﻿/*
     Spin Pong
-    This software uses The MIT License (MIT). See license agreement LICENSE for full details.
+    This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
 */
 
 using GameStateManager;
@@ -31,7 +31,7 @@ namespace GameStates
         public override void Initialize(RenderWindow window)
         {
             // Set font.
-            this.arial = new Font("assets/fonts/arial.ttf");
+            this.arial = new Font("assets/fonts/centurygothic.ttf");
 
             // Create sound buffer from filename.
             SoundBuffer menuClickForwardBuffer = new SoundBuffer("assets/sounds/menu_click_forward.wav");
