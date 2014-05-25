@@ -1,0 +1,18 @@
+SOUND ATTRIBUTIONS:
+
+
+Available under the Public Domain - CC0 1.0 Universal (CC0 1.0) - http://creativecommons.org/publicdomain/zero/1.0/
+
+* "menu_click_back.wav" - https://www.freesound.org/people/Callum_Sharp279/sounds/198778/
+* "ball_hits_player.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
+* "ball_hits_enemy.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
+* "pause.wav" - https://www.freesound.org/people/crisstanza/sounds/167127/
+* "unpause.wav" - https://www.freesound.org/people/crisstanza/sounds/167126/
+
+
+Available under the license: Attribution 3.0 Unported (CC BY 3.0) - http://creativecommons.org/licenses/by/3.0/
+
+* "menu_click_forward.wav" - by NenadSimic. https://www.freesound.org/people/NenadSimic/sounds/171697/
+* "scoring_point.wav" - by timgormly. https://www.freesound.org/people/timgormly/sounds/170155/
+* "game_over.wav" - by notchfilter. https://www.freesound.org/people/notchfilter/sounds/43698/
+* "game_won.wav" - by jobro. https://www.freesound.org/people/jobro/sounds/60445/

@@ -1,6 +1,8 @@
 ﻿/*
     Spin Pong
     This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
+
+    For full details on sound attributions, see ATTRIBUTIONS.txt.
 */
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8,20 +10,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // TO-DO: Create README.
-//
-// SOUND ATTRIBUTIONS:
-//              - "menu_click_forward.wav" - https://www.freesound.org/people/NenadSimic/sounds/171697/
-//              - "menu_click_back.wav" - https://www.freesound.org/people/Callum_Sharp279/sounds/198778/
-//              - "ballhitspaddle.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
-//                  * Edited to two .wav files: "ball_hits_player.wav", "ball_hits_enemy.wav".
-//              - "scoring_point.wav" - https://www.freesound.org/people/timgormly/sounds/170155/
-//              - "pause.wav" - https://www.freesound.org/people/crisstanza/sounds/167127/
-//              - "unpause.wav" - https://www.freesound.org/people/crisstanza/sounds/167126/
-//              - "game_over.wav" - https://www.freesound.org/people/notchfilter/sounds/43698/
-//              - "game_won.wav" - https://www.freesound.org/people/jobro/sounds/60445/
-//
-// TO-DO (maybe): Mouse cursor clipped/grabbed/captured to the window.
-// TO-DO (maybe): Change to fixed timestep, tie game logic to game time elapsed, not framerate.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
