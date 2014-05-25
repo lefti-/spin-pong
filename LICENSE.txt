@@ -22,8 +22,10 @@ SOFTWARE.
 
 
 This software uses the following external libraries
--------------------------------
+---------------------------------------------------
 
-*Box2D/Box2DX under license ZLIB/PNG by Erin Catto: http://box2d.org/
-*SFML/SFML.NET under license ZLIB/PNG by Laurent Gomila: http://www.sfml-dev.org/index.php
-*NetEXT under license ZLIB/PNG by Zachariah Brown: https://bitbucket.org/zsbzsb/netext/overview
+Distributed under the license zlib/png - http://opensource.org/licenses/Zlib
+
+*Box2D/Box2DX by Erin Catto: http://box2d.org/
+*SFML/SFML.NET by Laurent Gomila: http://www.sfml-dev.org/index.php
+*NetEXT by Zachariah Brown: https://bitbucket.org/zsbzsb/netext/overview
