@@ -6,7 +6,7 @@ What?
 This repo contains Spin Pong - a spin-off of Pong (pun intended)! A game I developed as my first serious game project. 
 It is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-bindings).
 
-- SFML is used for handling input, graphics, audio, windowing and text
+- SFML (Simple and Fast Multimedia Library) is used for handling input, graphics, audio, windowing and text
 - Box2D is used for collision detection and response
 
 Project:
