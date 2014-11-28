@@ -9,7 +9,7 @@ It is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-binding
 - SFML is used for handling input, graphics, audio, windowing and text
 - Box2D is used for collision detection and response
 
-Projects:
+Project:
 ---------
 sping-pong : A full playable game with gameplay similar to Pong.  Five different difficulty options. 
              Graphics created in paint.net. Sounds found from the internet.
