@@ -28,5 +28,5 @@ Provide the compiled binaries
 
 Other
 -----
-Check out credits for sound: ATTRIBUTIONS.txt.
+Check out credits for sound: ATTRIBUTIONS.txt
 This project uses the MIT license. Feel free to poke.
