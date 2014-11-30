@@ -1,5 +1,6 @@
 SOUND ATTRIBUTIONS:
 
+Thanks!
 
 Available under the Public Domain - CC0 1.0 Universal (CC0 1.0) - http://creativecommons.org/publicdomain/zero/1.0/
 
@@ -8,7 +9,6 @@ Available under the Public Domain - CC0 1.0 Universal (CC0 1.0) - http://creativ
 * "ball_hits_enemy.wav" - https://www.freesound.org/people/mickdow/sounds/177409/
 * "pause.wav" - https://www.freesound.org/people/crisstanza/sounds/167127/
 * "unpause.wav" - https://www.freesound.org/people/crisstanza/sounds/167126/
-
 
 Available under the license: Attribution 3.0 Unported (CC BY 3.0) - http://creativecommons.org/licenses/by/3.0/
 
