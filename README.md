@@ -16,8 +16,8 @@ sping-pong : A full playable game with gameplay similar to Pong.  Four different
 
 How to download?
 ----------------
-First you have to download the game binary. Navigate to the folder "bin". Click the file "spinpong.zip".
-On the right, click the button named "Raw". This should download the .zip file.
+You have to download the game binary, assets and required .dll's. Navigate to the folder "bin". 
+Click the file "spinpong.zip". On the right, click the button named "Raw". This should download the .zip file.
 
 How to play?
 ------------
