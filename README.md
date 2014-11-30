@@ -1,6 +1,6 @@
 Sping Pong
 ----------
-
+![alt tag](https://cloud.githubusercontent.com/assets/5671281/5238002/d2110caa-78b1-11e4-8f73-6a73dac84293.jpg)
 What?
 -----
 This repo contains Spin Pong - a spin-off of Pong! A game I developed as my first serious game project. 
