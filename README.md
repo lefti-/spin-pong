@@ -1,4 +1,4 @@
-Sping Pong
+Spin Pong
 ----------
 ![alt tag](https://cloud.githubusercontent.com/assets/5671281/5238002/d2110caa-78b1-11e4-8f73-6a73dac84293.jpg)
 What?
@@ -15,7 +15,7 @@ Project:
 - Play vs. AI
 - Four different difficulty levels
 - Graphics created in Paint.net
-- Sounds found from the internet.
+- Sounds found from the internet
 
 How to download?
 ----------------
