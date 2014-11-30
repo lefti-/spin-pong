@@ -19,8 +19,8 @@ How to download?
 You have to download the game binary, assets and required .dll's. The .zip file contains
 the executable.
 
-- Navigate to the folder "bin".
-- Click the file "spinpong.zip".
+- Navigate to the folder "bin"
+- Click the file "spinpong.zip"
 - On the right, click the button named "Raw"
 - This downloads the .zip file
 
@@ -28,7 +28,7 @@ How to play?
 ------------
 The ball speeds up at a constant rate. You may notice that the AI is almost impossible to defeat. 
 This is where the "Spin" from "Spin Pong" comes into play. When you hit the ball, move your 
-mouse in the same direction the ball is going in. This is the key to winning !
+mouse in the same direction the ball is going in. This is the key to winning!
 
 Other
 -----
