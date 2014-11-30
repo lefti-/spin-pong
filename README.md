@@ -28,7 +28,7 @@ This .zip file contains the executable.
 
 How to play?
 ------------
-The ball speeds up at a constant rate. You may notice that the AI is almost impossible to defeat. 
+Move the paddle with mouse. The ball speeds up at a constant rate. You may notice that the AI is almost impossible to defeat.
 This is where the "Spin" from "Spin Pong" comes into play. When you hit the ball, move your 
 mouse in the same direction the ball is going in. This is the key to winning!
 
