@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EA497BB5-9824-44DF-A028-FBFCDF3C56E2}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>spin_pong</RootNamespace>
-    <AssemblyName>spin-pong</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>src</RootNamespace>
+    <AssemblyName>src</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -64,6 +64,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Box2DX, Version=2.0.1.28279, Culture=neutral, processorArchitecture=x86">
