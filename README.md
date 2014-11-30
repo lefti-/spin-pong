@@ -19,7 +19,7 @@ Project:
 
 How to download?
 ----------------
-You have to download the game binary, assets and required .dll's. I bundled them all in one .zip file.
+You have to download the game binary, assets and required .dll's. I bundled them all in one 1,64MB .zip file.
 This .zip file contains the executable.
 
 - Navigate to the folder "bin"
