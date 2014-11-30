@@ -3,16 +3,18 @@ Sping Pong
 
 What?
 -----
-This repo contains Spin Pong - a spin-off of Pong (pun intended)! A game I developed as my first serious game project. 
-It is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-bindings).
+This repo contains Spin Pong - a spin-off of Pong! A game I developed as my first serious game project. 
+The game is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-bindings).
 
 - SFML (Simple and Fast Multimedia Library) is used for handling input, graphics, audio, windowing and text
 - Box2D is used for collision detection and response
 
 Project:
 ---------
-sping-pong : A full playable game with gameplay similar to Pong.  Four different difficulty levels. 
-             Graphics created in Paint.net. Sounds found from the internet.
+- Gameplay similar to Pong, but with a twist
+- Four different difficulty levels
+- Graphics created in Paint.net
+- Sounds found from the internet.
 
 How to download?
 ----------------
