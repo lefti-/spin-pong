@@ -11,7 +11,7 @@ It is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-binding
 
 Project:
 ---------
-sping-pong : A full playable game with gameplay similar to Pong.  Four different difficuly levels. 
+sping-pong : A full playable game with gameplay similar to Pong.  Four different difficulty levels. 
              Graphics created in Paint.net. Sounds found from the internet.
 
 How to download?
