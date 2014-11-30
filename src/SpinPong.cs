@@ -1,8 +1,6 @@
 ﻿/*
     Spin Pong
     This software uses The MIT License (MIT). See license agreement LICENSE.txt for full details.
-
-    For full details on sound attributions, see ATTRIBUTIONS.txt.
 */
 
 using GameStateManager;
