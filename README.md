@@ -12,6 +12,7 @@ The game is programmed in C#, using SFML (with C#-bindings) and Box2D (with C#-b
 Project:
 ---------
 - Gameplay similar to Pong, but with a twist
+- Play vs. AI
 - Four different difficulty levels
 - Graphics created in Paint.net
 - Sounds found from the internet.
