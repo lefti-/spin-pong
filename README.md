@@ -14,6 +14,11 @@ Project:
 sping-pong : A full playable game with gameplay similar to Pong.  Four different difficuly levels. 
              Graphics created in Paint.net. Sounds found from the internet.
 
+How to download?
+----------------
+First you have to download the game binary. Navigate to the folder "bin". Click the file "spinpong.zip".
+On the right, click the button named "Raw". This should download the .zip file.
+
 How to play?
 ------------
 The ball speeds up at a constant rate. You may notice that the AI is almost impossible to defeat. 
