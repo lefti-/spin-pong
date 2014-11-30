@@ -22,7 +22,7 @@ How to download?
 You have to download the game binary, assets and required .dll's. I bundled them all in one 1,64MB .zip file.
 This .zip file contains the executable.
 
-- Navigate to the folder "bin"
+- Navigate to the folder "bin" on top of the site
 - Click the file "spinpong.zip"
 - On the right, click the button named "Raw"
 - This downloads the .zip file
