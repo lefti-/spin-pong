@@ -27,6 +27,8 @@ This .zip file contains the executable.
 - On the right, click the button named "Raw"
 - This downloads the .zip file
 
+NOTE: Currently only tested on Windows!
+
 How to play?
 ------------
 Move the paddle with mouse. The ball speeds up at a constant rate. You may notice that the AI is almost impossible to defeat.
